@@ -78,11 +78,3 @@ A **Ballerina-based backend** that connects students, faculty, and admins in one
 * **Observability** (metrics, logs, tracing) built in → easy for hackathon demo.
 
 ---
-
-🔥 This idea ticks **all evaluation criteria**:
-✅ Innovative → solves a real university pain point.
-✅ Impactful → scalable across education systems.
-✅ Functional → possible to complete in hackathon time.
-✅ Ballerina Usage → APIs, DB, SMTP, Google Calendar.
-
----
