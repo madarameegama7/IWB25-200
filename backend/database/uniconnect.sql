@@ -71,3 +71,6 @@ CREATE TABLE waitlist (
     FOREIGN KEY (student_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (faculty_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS password_salt TEXT;
+
