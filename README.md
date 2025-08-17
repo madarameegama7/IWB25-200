@@ -22,7 +22,7 @@ A **Ballerina-based backend** that connects students, faculty, and admins in one
 ### 🛠 Tech Stack
 
 * **Backend**: Ballerina (REST APIs, JWT Auth, SMTP, Google Calendar integration)
-* **Frontend**: React.js (or simple HTML if time is short)
+* **Frontend**: React.js
 * **Database**: PostgreSQL/MySQL (appointments, users, tokens)
 * **APIs**:
 
