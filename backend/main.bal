@@ -11,7 +11,7 @@ listener http:Listener backendEP = new(8083);
 // Service-level CORS config applies globally to all resources
 @http:ServiceConfig {
     cors: {
-        allowOrigins: ["http://localhost:5173"],
+        allowOrigins: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175"],
         allowMethods: ["GET", "POST"],
         allowCredentials: false,
         allowHeaders: ["CORELATION_ID"],
