@@ -8,6 +8,7 @@ import DestinationSearch from './components/DestinationSearch';
 import TransportOptions from './components/TransportOptions';
 import TripPlanner from './components/TripPlanner';
 import NotificationPanel from './components/NotificationPanel';
+import RouteMap from './components/RouteMap';
 import Schedules from "./components/Schedules";
 import Predictions from "./components/Predictions";
 import Alerts from "./components/Alerts";
@@ -15,10 +16,11 @@ import Alerts from "./components/Alerts";
 const App = () => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [destination, setDestination] = useState('');
+  const [destinationCoords, setDestinationCoords] = useState(null);
   const [transportOptions, setTransportOptions] = useState([]);
-  const [activeTab, setActiveTab] = useState('realtime');
   const [loading, setLoading] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [showTravelPlatform, setShowTravelPlatform] = useState(true);
 
   const API_BASE_URL = 'http://localhost:8083';
 
@@ -44,11 +46,13 @@ const App = () => {
     }
   }, []);
 
-  // Search for transport options
+  // Search for transport options and update route
   const searchTransportOptions = async (destinationCoords) => {
     if (!currentLocation) return;
 
     setLoading(true);
+    setDestinationCoords(destinationCoords);
+    
     try {
       const response = await axios.get(`${API_BASE_URL}/routes/options`, {
         params: {
@@ -61,6 +65,8 @@ const App = () => {
       
       if (response.data.status === 'success') {
         setTransportOptions(response.data.data);
+        // Store route data for future map implementation
+        console.log('Route data available for map integration');
       }
     } catch (error) {
       console.error('Error fetching transport options:', error);
@@ -95,50 +101,105 @@ const App = () => {
 
   return (
     <div className="app">
-      {/* Header */}
-      <header className="app-header">
-        <h1>🚌 Smart Transport Assistant</h1>
-        <p>AI-powered public transport navigation for Sri Lanka</p>
-      </header>
-
-      {/* Navigation Tabs */}
-      <nav className="navigation-tabs">
-        <button 
-          className={activeTab === 'realtime' ? 'active' : ''}
-          onClick={() => setActiveTab('realtime')}
-        >
-          📍 Real-Time Journey
-        </button>
-        <button 
-          className={activeTab === 'planner' ? 'active' : ''}
-          onClick={() => setActiveTab('planner')}
-        >
-          📅 Trip Planner
-        </button>
-        <button 
-          className={activeTab === 'legacy' ? 'active' : ''}
-          onClick={() => setActiveTab('legacy')}
-        >
-          📊 Data View
-        </button>
-      </nav>
-
-      {/* Main Content */}
-      <main className="main-content">
-        {activeTab === 'realtime' && (
-          <div className="realtime-section">
-            <div className="section-header">
-              <h2>Real-Time Journey Planning</h2>
-              <p>Plan your journey based on current location and real-time data</p>
+      {showTravelPlatform ? (
+        <>
+          {/* Header */}
+          <header className="app-header">
+            <div className="header-left">
+              <h1>🚌 SmartTransport</h1>
+              <nav className="header-nav">
+                <a href="#" className="active">Home</a>
+                <a href="#">Services/Routes</a>
+                <a href="#">Contact Us</a>
+                <a href="#">FAQ</a>
+              </nav>
             </div>
+            <div className="header-right">
+              <button className="header-button btn-outline-header">Sign Up</button>
+              <button className="header-button btn-primary-header">Log In</button>
+            </div>
+          </header>
 
-            <div className="journey-inputs">
+          {/* Hero Section */}
+          <section className="hero-section">
+            <div className="hero-content">
+              <h1>Cost efficient travelling.<br />Worldwide.</h1>
+              <p>Smart Planning integrated solutions for business and independent travellers</p>
+              <div className="hero-cta">
+                <button 
+                  className="cta-button cta-primary"
+                  onClick={() => setShowTravelPlatform(false)}
+                >
+                  Start Journey
+                </button>
+                <a href="#features" className="cta-button cta-secondary">Learn More</a>
+              </div>
+            </div>
+          </section>
+        </>
+      ) : (
+        <>
+          {/* Header */}
+          <header className="app-header">
+            <div className="header-left">
+              <h1>🚌 SmartTransport</h1>
+              <nav className="header-nav">
+                <a href="#" className="active">Journey Planner</a>
+                <a href="#">Live Updates</a>
+                <a href="#">My Trips</a>
+              </nav>
+            </div>
+            <div className="header-right">
+              <button 
+                className="header-button btn-outline-header"
+                onClick={() => setShowTravelPlatform(true)}
+              >
+                Back to Home
+              </button>
+            </div>
+          </header>
+
+          {/* Route Map Section - Only shows when destination is selected */}
+          {currentLocation && destinationCoords && (
+            <div className="route-map-section">
+              <RouteMap 
+                currentLocation={currentLocation}
+                destination={destinationCoords}
+                transportOptions={transportOptions}
+              />
+            </div>
+          )}
+
+          {/* Main Content Section */}
+          <div className="main-content">
+            <div className="journey-planning">
+              <div className="search-section">
+                <h2>Plan Your Journey</h2>
+                <div className="search-form">
+                  <div className="input-group">
+                    <span className="input-icon">📍</span>
+                    <input
+                      type="text"
+                      className="search-input"
+                      placeholder="From where?"
+                      value={currentLocation ? 
+                        `Current Location (${currentLocation.latitude.toFixed(4)}, ${currentLocation.longitude.toFixed(4)})` : 
+                        'Getting your location...'
+                      }
+                      readOnly
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Location Selection */}
               <LocationTracker 
                 currentLocation={currentLocation}
                 onLocationUpdate={setCurrentLocation}
                 getNearbyStops={getNearbyStops}
               />
               
+              {/* Destination Search */}
               <DestinationSearch 
                 destination={destination}
                 onDestinationSelect={(dest, coords) => {
@@ -146,69 +207,29 @@ const App = () => {
                   searchTransportOptions(coords);
                 }}
               />
+
+              {/* Transport Options */}
+              {loading && (
+                <div className="loading-indicator">
+                  <div className="spinner"></div>
+                  <p>Finding best routes...</p>
+                </div>
+              )}
+
+              <TransportOptions 
+                options={transportOptions}
+                loading={loading}
+              />
             </div>
-
-            {loading && (
-              <div className="loading-indicator">
-                <div className="spinner"></div>
-                <p>Finding best transport options...</p>
-              </div>
-            )}
-
-            <TransportOptions 
-              options={transportOptions}
-              loading={loading}
-            />
           </div>
-        )}
-
-        {activeTab === 'planner' && (
-          <div className="planner-section">
-            <div className="section-header">
-              <h2>Advanced Trip Planning</h2>
-              <p>Plan future trips with custom dates and times</p>
-            </div>
-
-            <TripPlanner 
-              currentLocation={currentLocation}
-              apiBaseUrl={API_BASE_URL}
-            />
-          </div>
-        )}
-
-        {activeTab === 'legacy' && (
-          <div className="legacy-section">
-            <div className="section-header">
-              <h2>Data Overview</h2>
-              <p>View schedules, predictions, and alerts</p>
-            </div>
-            <Schedules />
-            <Predictions />
-            <Alerts />
-          </div>
-        )}
-      </main>
+        </>
+      )}
 
       {/* Notifications */}
       <NotificationPanel 
         notifications={notifications}
         onDismiss={(id) => setNotifications(prev => prev.filter(n => n.id !== id))}
       />
-
-      {/* Status Bar */}
-      <footer className="status-bar">
-        <div className="status-item">
-          <span className={`status-indicator ${currentLocation ? 'active' : 'inactive'}`}></span>
-          Location: {currentLocation ? 'Active' : 'Detecting...'}
-        </div>
-        <div className="status-item">
-          <span className="status-indicator active"></span>
-          Backend: Connected
-        </div>
-        <div className="status-item">
-          Options: {transportOptions.length}
-        </div>
-      </footer>
     </div>
   );
 };

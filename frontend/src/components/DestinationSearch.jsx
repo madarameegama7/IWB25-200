@@ -1,9 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const DestinationSearch = ({ destination, onDestinationSelect }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchRef = useRef(null);
+
+  // Handle clicking outside to close suggestions
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Popular destinations in Sri Lanka
   const popularDestinations = [
@@ -26,15 +41,30 @@ const DestinationSearch = ({ destination, onDestinationSelect }) => {
   const handleSearch = (query) => {
     setSearchQuery(query);
     
-    if (query.length > 2) {
+    if (query.length > 0) {
       const filtered = popularDestinations.filter(dest =>
         dest.name.toLowerCase().includes(query.toLowerCase())
       );
       setSuggestions(filtered);
       setShowSuggestions(true);
     } else {
-      setShowSuggestions(false);
+      // Show all destinations when search is empty but input is focused
+      setSuggestions(popularDestinations);
+      setShowSuggestions(true);
     }
+  };
+
+  const handleInputFocus = () => {
+    if (searchQuery.length > 0) {
+      const filtered = popularDestinations.filter(dest =>
+        dest.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setSuggestions(filtered);
+    } else {
+      // Show all destinations when input is focused and empty
+      setSuggestions(popularDestinations);
+    }
+    setShowSuggestions(true);
   };
 
   const handleDestinationSelect = (dest) => {
@@ -74,22 +104,23 @@ const DestinationSearch = ({ destination, onDestinationSelect }) => {
 
       <div className="search-content">
         {/* Search Input */}
-        <div className="search-input-container">
+        <div className="search-input-container" ref={searchRef}>
           <div className="search-input-wrapper">
             <span className="search-icon">🔍</span>
             <input
               type="text"
-              placeholder="Search destinations, landmarks, stations..."
+              placeholder="Type city name or select from the list below..."
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
-              onFocus={() => searchQuery.length > 2 && setShowSuggestions(true)}
+              onFocus={handleInputFocus}
               className="search-input"
             />
             {searchQuery && (
               <button
                 onClick={() => {
                   setSearchQuery('');
-                  setShowSuggestions(false);
+                  setSuggestions(popularDestinations);
+                  setShowSuggestions(true);
                 }}
                 className="clear-search"
               >
@@ -101,21 +132,26 @@ const DestinationSearch = ({ destination, onDestinationSelect }) => {
           {/* Search Suggestions */}
           {showSuggestions && suggestions.length > 0 && (
             <div className="suggestions-dropdown">
-              {suggestions.map((suggestion) => (
-                <button
-                  key={suggestion.name}
-                  onClick={() => handleDestinationSelect(suggestion)}
-                  className="suggestion-item"
-                >
-                  <span className="suggestion-icon">
-                    {getTypeIcon(suggestion.type)}
-                  </span>
-                  <div className="suggestion-info">
-                    <p className="suggestion-name">{suggestion.name}</p>
-                    <p className="suggestion-type">{suggestion.type}</p>
-                  </div>
-                </button>
-              ))}
+              <div className="suggestions-header">
+                <span>📍 All Locations ({suggestions.length})</span>
+              </div>
+              <div className="suggestions-list">
+                {suggestions.map((suggestion) => (
+                  <button
+                    key={suggestion.name}
+                    onClick={() => handleDestinationSelect(suggestion)}
+                    className="suggestion-item"
+                  >
+                    <span className="suggestion-icon">
+                      {getTypeIcon(suggestion.type)}
+                    </span>
+                    <div className="suggestion-info">
+                      <p className="suggestion-name">{suggestion.name}</p>
+                      <p className="suggestion-type">{suggestion.type}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>
