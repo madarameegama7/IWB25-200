@@ -51,7 +51,11 @@ const RouteMap = ({ currentLocation, destination }) => {
           justify-content: center; 
           box-shadow: 0 2px 8px rgba(0,0,0,0.3);
           font-size: 20px;
-        ">📍</div>
+        "><img 
+          src="https://cdn-icons-png.flaticon.com/512/684/684908.png" 
+          alt="location"
+          style="width: 16px; height: 16px;"
+        /></div>
       `,
       iconSize: [40, 40],
       iconAnchor: [20, 20]
@@ -92,7 +96,14 @@ const RouteMap = ({ currentLocation, destination }) => {
         }).bindPopup(
           i === 0 
             ? `<div style="padding: 8px;">
-                <h4 style="margin: 0 0 8px 0; color: #22c55e;">📍 Current Location</h4>
+                <h4 style="margin: 0 0 8px 0; color: #22c55e;">
+                  <img 
+                    src="https://cdn-icons-png.flaticon.com/512/684/684908.png" 
+                    alt="location"
+                    style="width: 16px; height: 16px; margin-right: 4px; vertical-align: middle;"
+                  />
+                  Current Location
+                </h4>
                 <p style="margin: 0; font-size: 12px;">Lat: ${currentLocation.latitude.toFixed(6)}</p>
                 <p style="margin: 0; font-size: 12px;">Lng: ${currentLocation.longitude.toFixed(6)}</p>
               </div>`
@@ -167,10 +178,34 @@ const RouteMap = ({ currentLocation, destination }) => {
   return (
     <div className="route-map-container">
       <div className="route-info-header">
-        <h3>🗺️ Your Route</h3>
+        <h3>
+          <img 
+            src="https://cdn-icons-png.flaticon.com/512/2972/2972628.png" 
+            alt="map"
+            style={{
+              width: '18px',
+              height: '18px',
+              marginRight: '8px',
+              verticalAlign: 'middle'
+            }}
+          />
+          Your Route
+        </h3>
         <div className="route-stats">
           <span className="distance-badge">📏 {distance} km</span>
-          <span className="transport-badge">🚌 Public Transport</span>
+          <span className="transport-badge">
+            <img 
+              src="https://cdn-icons-png.flaticon.com/512/3039/3039008.png" 
+              alt="bus"
+              style={{
+                width: '14px',
+                height: '14px',
+                marginRight: '4px',
+                verticalAlign: 'middle'
+              }}
+            />
+            Public Transport
+          </span>
         </div>
       </div>
       <div 
@@ -179,7 +214,16 @@ const RouteMap = ({ currentLocation, destination }) => {
       />
       <div className="route-details">
         <div className="route-point start-point">
-          <div className="point-icon">📍</div>
+          <div className="point-icon">
+            <img 
+              src="https://cdn-icons-png.flaticon.com/512/684/684908.png" 
+              alt="location"
+              style={{
+                width: '12px',
+                height: '12px'
+              }}
+            />
+          </div>
           <div className="point-info">
             <span className="point-label">From</span>
             <span className="point-coords">

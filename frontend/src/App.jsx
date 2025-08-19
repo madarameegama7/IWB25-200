@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './App.css';
 
@@ -100,6 +100,66 @@ const App = () => {
     }
   }, [currentLocation]);
 
+  // Test function to show various transport notifications
+  const showTransportNotifications = () => {
+    const notifications = [
+      {
+        id: Date.now() + 1,
+        type: 'warning',
+        title: 'Route 401 Delayed',
+        message: 'Route 401 (Elpitiya - Colombo/Pettah) is delayed by 25 minutes due to heavy traffic near Wellawatta.',
+        timestamp: Date.now(),
+        routeId: 'route_401',
+        delayMinutes: 25,
+        icon: 'https://cdn-icons-png.flaticon.com/512/3039/3039008.png' // Bus delay icon
+      },
+      {
+        id: Date.now() + 2,
+        type: 'error',
+        title: 'Route 138 Cancelled',
+        message: 'Route 138 (Kottawa - Pettah) evening service has been cancelled due to mechanical issues.',
+        timestamp: Date.now() + 1000,
+        routeId: 'route_138',
+        status: 'cancelled',
+        icon: 'https://cdn-icons-png.flaticon.com/512/1828/1828843.png' // Cancel/stop icon
+      },
+      {
+        id: Date.now() + 3,
+        type: 'warning',
+        title: 'Route 01 Running Late',
+        message: 'Route 01 (Kandy - Colombo) is running 15 minutes behind schedule due to road construction.',
+        timestamp: Date.now() + 2000,
+        routeId: 'route_01',
+        delayMinutes: 15,
+        icon: 'https://cdn-icons-png.flaticon.com/512/2972/2972531.png' // Clock/time icon
+      },
+      {
+        id: Date.now() + 4,
+        type: 'error',
+        title: 'Route 177 Service Disruption',
+        message: 'Route 177 (Kaduwela - Kollupitiya) services suspended until 3 PM due to accident on Baseline Road.',
+        timestamp: Date.now() + 3000,
+        routeId: 'route_177',
+        status: 'suspended',
+        icon: 'https://cdn-icons-png.flaticon.com/512/5973/5973800.png' // Warning/construction icon
+      }
+    ];
+    
+    console.log('Transport notifications triggered:', notifications);
+    
+    // Add notifications one by one with slight delays
+    notifications.forEach((notification, index) => {
+      setTimeout(() => {
+        setNotifications(prev => [...prev, notification]);
+        
+        // Auto-dismiss after 12 seconds
+        setTimeout(() => {
+          setNotifications(prev => prev.filter(n => n.id !== notification.id));
+        }, 12000);
+      }, index * 500); // 500ms delay between each notification
+    });
+  };
+
   // Handle location updates from LocationTracker
   const handleLocationUpdate = (newLocation) => {
     setCurrentLocation(newLocation);
@@ -110,6 +170,144 @@ const App = () => {
         .then(name => setFromLocationName(name));
     }
   };
+
+  // Transport delay monitoring system (moved up to be defined first)
+  const checkTransportDelays = useCallback(async (options) => {
+    // Simulate real-time delay checking - INCREASED chance for testing
+    const delayUpdates = options.map(option => {
+      const hasDelay = Math.random() < 0.8; // 80% chance of delay for testing
+      const delayMinutes = hasDelay ? Math.floor(Math.random() * 25) + 5 : 0; // 5-30 minutes delay
+      
+      return {
+        ...option,
+        status: delayMinutes > 0 ? 'delayed' : option.status,
+        delayMinutes: delayMinutes > 0 ? delayMinutes : null
+      };
+    });
+    
+    // Check for new delays and notify users
+    delayUpdates.forEach((option, index) => {
+      // Force at least the first route to have a delay for testing
+      if (index === 0 && option.delayMinutes === null) {
+        option.delayMinutes = 12;
+        option.status = 'delayed';
+      }
+      
+      if (option.delayMinutes && option.delayMinutes > 0) {
+        console.log(`Creating delay notification for ${option.routeName}: ${option.delayMinutes} minutes`);
+        
+        const delayNotification = {
+          id: Date.now() + Math.random(),
+          type: option.delayMinutes > 15 ? 'warning' : 'delay',
+          title: `${option.routeName} Delayed`,
+          message: `Route ${option.routeNumber} is delayed by ${option.delayMinutes} minutes. We recommend considering alternative routes.`,
+          timestamp: Date.now(),
+          routeId: option.id,
+          delayMinutes: option.delayMinutes,
+          icon: 'https://cdn-icons-png.flaticon.com/512/5973/5973800.png' // Warning icon for delays
+        };
+        
+        console.log('Adding notification:', delayNotification);
+        setNotifications(prev => {
+          console.log('Current notifications:', prev);
+          return [...prev, delayNotification];
+        });
+        
+        // Auto-dismiss delay notifications after 30 seconds
+        setTimeout(() => {
+          setNotifications(prev => prev.filter(n => n.id !== delayNotification.id));
+        }, 30000);
+      }
+    });
+    
+    return delayUpdates;
+  }, [setNotifications]);
+
+  // Real-time delay checking from backend API
+  const checkRealTimeDelays = useCallback(async (options) => {
+    try {
+      // Get route IDs for batch delay check
+      const routeIds = options.map(option => option.id).join(',');
+      
+      const response = await axios.get(`${API_BASE_URL}/delays/batch`, {
+        params: { route_ids: routeIds }
+      });
+      
+      if (response.data.status === 'success') {
+        const delayData = response.data.data;
+        
+        // Update options with real delay data
+        const updatedOptions = options.map(option => {
+          const delayInfo = delayData.find(d => d.routeId === option.id);
+          if (delayInfo) {
+            return {
+              ...option,
+              status: delayInfo.status,
+              delayMinutes: delayInfo.delayMinutes > 0 ? delayInfo.delayMinutes : null,
+              delayReason: delayInfo.reason
+            };
+          }
+          return option;
+        });
+        
+        // Show notifications for significant delays
+        updatedOptions.forEach(option => {
+          if (option.delayMinutes && option.delayMinutes > 0) {
+            const existingNotification = notifications.find(n => 
+              n.routeId === option.id && n.type === 'delay'
+            );
+            
+            if (!existingNotification) {
+              const delayNotification = {
+                id: Date.now() + Math.random(),
+                type: option.delayMinutes > 15 ? 'warning' : 'delay',
+                title: `${option.routeName} Delayed`,
+                message: `Route ${option.routeNumber} is delayed by ${option.delayMinutes} minutes. ${option.delayReason || 'Checking for updates...'}`,
+                timestamp: Date.now(),
+                routeId: option.id,
+                delayMinutes: option.delayMinutes,
+                icon: 'https://cdn-icons-png.flaticon.com/512/5973/5973800.png' // Warning icon for delays
+              };
+              
+              setNotifications(prev => [...prev, delayNotification]);
+              
+              // Auto-dismiss after 45 seconds
+              setTimeout(() => {
+                setNotifications(prev => prev.filter(n => n.id !== delayNotification.id));
+              }, 45000);
+            }
+          }
+        });
+        
+        return updatedOptions;
+      }
+    } catch (error) {
+      console.log('Real-time delay API unavailable, using simulation:', error);
+    }
+    
+    // Fallback to simulation if API is unavailable
+    return await checkTransportDelays(options);
+  }, [API_BASE_URL, notifications, checkTransportDelays]);
+
+  // Service disruption notifications
+  const checkServiceDisruptions = useCallback((options) => {
+    options.forEach(option => {
+      if (option.status === 'cancelled') {
+        const cancellationNotification = {
+          id: Date.now() + Math.random(),
+          type: 'error',
+          title: `Service Cancelled`,
+          message: `${option.routeName} (Route ${option.routeNumber}) has been cancelled. Please check alternative routes.`,
+          timestamp: Date.now(),
+          routeId: option.id,
+          persistent: true, // Don't auto-dismiss
+          icon: 'https://cdn-icons-png.flaticon.com/512/1828/1828843.png' // Cancel icon
+        };
+        
+        setNotifications(prev => [...prev, cancellationNotification]);
+      }
+    });
+  }, [setNotifications]);
 
   // Search for transport options and update route
   const searchTransportOptions = async (destinationCoords) => {
@@ -127,7 +325,7 @@ const App = () => {
             transportType: "bus",
             routeName: "Route 2 to Galle",
             routeNumber: "2",
-            estimatedDuration: 180,
+            estimatedDuration: 270,
             walkingDistance: 200,
             stops: [],
             status: "on_time",
@@ -138,7 +336,7 @@ const App = () => {
             transportType: "bus", 
             routeName: "Route 32 to Galle",
             routeNumber: "32",
-            estimatedDuration: 185,
+            estimatedDuration: 270,
             walkingDistance: 250,
             stops: [],
             status: "on_time",
@@ -149,7 +347,7 @@ const App = () => {
             transportType: "train",
             routeName: "Coastal Line to Galle",
             routeNumber: "CL-01",
-            estimatedDuration: 150,
+            estimatedDuration: 250,
             walkingDistance: 300,
             stops: [],
             status: "on_time",
@@ -188,11 +386,11 @@ const App = () => {
       else if (lat >= 6.8 && lat <= 6.9 && lng >= 80.0 && lng <= 80.1) {
         return [
           {
-            id: "bus_route_177",
+            id: "bus_route_138_homagama",
             transportType: "bus",
-            routeName: "Route 177 to Homagama",
-            routeNumber: "177",
-            estimatedDuration: 45,
+            routeName: "Route 138 to Homagama",
+            routeNumber: "138",
+            estimatedDuration: 75,
             walkingDistance: 180,
             stops: [],
             status: "on_time",
@@ -203,7 +401,7 @@ const App = () => {
             transportType: "train",
             routeName: "Kelani Valley Line to Homagama",
             routeNumber: "KV-03",
-            estimatedDuration: 35,
+            estimatedDuration: 65,
             walkingDistance: 300,
             stops: [],
             status: "on_time",
@@ -221,6 +419,60 @@ const App = () => {
             routeNumber: "401",
             estimatedDuration: 240,
             walkingDistance: 150,
+            stops: [],
+            status: "on_time",
+            delayMinutes: null
+          }
+        ];
+      }
+      // Pettah area (around 6.9354, 79.8500)
+      else if (lat >= 6.93 && lat <= 6.94 && lng >= 79.84 && lng <= 79.86) {
+        return [
+          {
+            id: "bus_route_pettah",
+            transportType: "bus",
+            routeName: "Route 138 to Pettah",
+            routeNumber: "138",
+            estimatedDuration: 30,
+            walkingDistance: 100,
+            stops: [],
+            status: "on_time",
+            delayMinutes: null
+          },
+          {
+            id: "bus_route_pettah_2",
+            transportType: "bus",
+            routeName: "Route 1 to Pettah",
+            routeNumber: "1",
+            estimatedDuration: 30,
+            walkingDistance: 120,
+            stops: [],
+            status: "on_time",
+            delayMinutes: null
+          }
+        ];
+      }
+      // Nugegoda area (around 6.8659, 79.8977)
+      else if (lat >= 6.86 && lat <= 6.87 && lng >= 79.89 && lng <= 79.91) {
+        return [
+          {
+            id: "bus_route_138_nugegoda",
+            transportType: "bus",
+            routeName: "Route 138 to Nugegoda",
+            routeNumber: "138",
+            estimatedDuration: 30,
+            walkingDistance: 150,
+            stops: [],
+            status: "on_time",
+            delayMinutes: null
+          },
+          {
+            id: "bus_route_138_nugegoda_2",
+            transportType: "bus",
+            routeName: "Route 138 to Nugegoda",
+            routeNumber: "138",
+            estimatedDuration: 30,
+            walkingDistance: 180,
             stops: [],
             status: "on_time",
             delayMinutes: null
@@ -248,10 +500,14 @@ const App = () => {
     // Get realistic route data based on destination coordinates
     const routeData = getRealisticRouteData(destinationCoords.latitude, destinationCoords.longitude);
     
-    // Simulate API delay for realism
-    setTimeout(() => {
-      setTransportOptions(routeData);
-      console.log('Realistic transport options loaded:', routeData);
+    // Simulate API delay for realism and check for transport delays
+    setTimeout(async () => {
+      // Try real-time delay checking first, fallback to simulation
+      const updatedRoutes = await checkRealTimeDelays(routeData);
+      checkServiceDisruptions(updatedRoutes);
+      
+      setTransportOptions(updatedRoutes);
+      console.log('Transport options with real-time delay monitoring loaded:', updatedRoutes);
       setLoading(false);
     }, 1000);
     
@@ -314,6 +570,19 @@ const App = () => {
     }]);
   };
 
+  // Periodic delay monitoring - check every 2 minutes
+  useEffect(() => {
+    if (transportOptions.length > 0) {
+      const delayCheckInterval = setInterval(async () => {
+        console.log('Checking for transport delays...');
+        const updatedRoutes = await checkRealTimeDelays(transportOptions);
+        setTransportOptions(updatedRoutes);
+      }, 120000); // Check every 2 minutes
+      
+      return () => clearInterval(delayCheckInterval);
+    }
+  }, [transportOptions, checkRealTimeDelays]);
+
   // Get nearby stops
   const getNearbyStops = async () => {
     if (!currentLocation) return [];
@@ -341,7 +610,19 @@ const App = () => {
           {/* Header */}
           <header className="app-header">
             <div className="header-left">
-              <h1>🚌 SmartTransport</h1>
+              <h1>
+                <img 
+                  src="https://cdn-icons-png.flaticon.com/512/3774/3774299.png" 
+                  alt="bus"
+                  style={{
+                    width: '24px',
+                    height: '24px',
+                    marginRight: '8px',
+                    verticalAlign: 'middle'
+                  }}
+                />
+                SmartTransport
+              </h1>
               <nav className="header-nav">
                 <a href="#" className="active">Home</a>
                 <a href="#">Services/Routes</a>
@@ -377,7 +658,19 @@ const App = () => {
           {/* Header */}
           <header className="app-header">
             <div className="header-left">
-              <h1>🚌 SmartTransport</h1>
+              <h1>
+                <img 
+                  src="https://cdn-icons-png.flaticon.com/512/3774/3774299.png" 
+                  alt="bus"
+                  style={{
+                    width: '24px',
+                    height: '24px',
+                    marginRight: '8px',
+                    verticalAlign: 'middle'
+                  }}
+                />
+                SmartTransport
+              </h1>
               <nav className="header-nav">
                 <a href="#" className="active">Journey Planner</a>
                 <a href="#">Live Updates</a>
@@ -385,6 +678,25 @@ const App = () => {
               </nav>
             </div>
             <div className="header-right">
+              <button
+                onClick={showTransportNotifications}
+                className="notifications-button"
+                style={{
+                  backgroundColor: '#2196F3',
+                  color: 'white',
+                  border: 'none',
+                  padding: '8px 16px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  marginRight: '10px',
+                  fontSize: '0.9rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px'
+                }}
+              >
+                � Notifications
+              </button>
               <button 
                 className="header-button btn-outline-header"
                 onClick={() => setShowTravelPlatform(true)}
@@ -398,7 +710,7 @@ const App = () => {
           {console.log('Checking RouteMap conditions - currentLocation:', !!currentLocation, 'destinationCoords:', !!destinationCoords)}
           {currentLocation && destinationCoords ? (
             <div className="route-map-section">
-              {console.log('✅ Rendering RouteMap with currentLocation:', currentLocation, 'destination:', destinationCoords)}
+              {console.log('✓ Rendering RouteMap with currentLocation:', currentLocation, 'destination:', destinationCoords)}
               <RouteMap 
                 currentLocation={currentLocation}
                 destination={destinationCoords}
@@ -407,7 +719,7 @@ const App = () => {
             </div>
           ) : (
             <div>
-              {console.log('❌ RouteMap NOT rendering - currentLocation exists:', !!currentLocation, 'destinationCoords exists:', !!destinationCoords)}
+              {console.log('✗ RouteMap NOT rendering - currentLocation exists:', !!currentLocation, 'destinationCoords exists:', !!destinationCoords)}
             </div>
           )}
 
@@ -418,7 +730,16 @@ const App = () => {
                 <h2>Plan Your Journey</h2>
                 <div className="search-form">
                   <div className="input-group">
-                    <span className="input-icon">📍</span>
+                    <span className="input-icon">
+                      <img 
+                        src="https://cdn-icons-png.flaticon.com/512/684/684908.png" 
+                        alt="location"
+                        style={{
+                          width: '16px',
+                          height: '16px'
+                        }}
+                      />
+                    </span>
                     <input
                       type="text"
                       className="search-input"
