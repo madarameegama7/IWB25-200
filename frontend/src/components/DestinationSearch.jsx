@@ -172,25 +172,37 @@ const DestinationSearch = ({ destination, onDestinationSelect }) => {
 
   const getTypeIcon = (type) => {
     const icons = {
-      landmark: '🏛️',
-      market: '🏪',
-      junction: '🚦',
-      town: '🏘️',
-      university: '🎓',
-      conference: '🏢',
-      city: '🏙️',
-      fort: '🏰',
-      beach: '🏖️',
-      park: '🌳',
-      shopping: '🛒'
+      landmark: 'https://cdn-icons-png.flaticon.com/512/2776/2776067.png',
+      market: 'https://cdn-icons-png.flaticon.com/512/3514/3514242.png',
+      junction: 'https://cdn-icons-png.flaticon.com/512/2972/2972570.png',
+      town: 'https://cdn-icons-png.flaticon.com/512/3774/3774299.png',
+      university: 'https://cdn-icons-png.flaticon.com/512/3595/3595030.png',
+      conference: 'https://cdn-icons-png.flaticon.com/512/235/235861.png',
+      city: 'https://cdn-icons-png.flaticon.com/512/235/235861.png',
+      fort: 'https://cdn-icons-png.flaticon.com/512/2776/2776067.png',
+      beach: 'https://cdn-icons-png.flaticon.com/512/2972/2972351.png',
+      park: 'https://cdn-icons-png.flaticon.com/512/2972/2972464.png',
+      shopping: 'https://cdn-icons-png.flaticon.com/512/3514/3514242.png'
     };
-    return icons[type] || '📍';
+    return icons[type] || 'https://cdn-icons-png.flaticon.com/512/684/684908.png';
   };
 
   return (
     <div className="destination-search">
       <div className="search-header">
-        <h3>🎯 Where to?</h3>
+        <h3>
+          <img 
+            src="https://cdn-icons-png.flaticon.com/512/2776/2776067.png" 
+            alt="destination"
+            style={{
+              width: '16px',
+              height: '16px',
+              marginRight: '8px',
+              verticalAlign: 'middle'
+            }}
+          />
+          Where to?
+        </h3>
       </div>
 
       <div className="search-content">
@@ -199,7 +211,7 @@ const DestinationSearch = ({ destination, onDestinationSelect }) => {
           <div className="search-input-wrapper">
             <input
               type="text"
-              placeholder="🔍 Type any location, street, or landmark..."
+              placeholder="Type any location, street, or landmark..."
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
               onFocus={handleInputFocus}
@@ -237,7 +249,16 @@ const DestinationSearch = ({ destination, onDestinationSelect }) => {
                         onClick={() => handleDestinationSelect(suggestion)}
                         className="suggestion-item api-suggestion"
                       >
-                        <span className="suggestion-icon">📍</span>
+                        <span className="suggestion-icon">
+                          <img 
+                            src="https://cdn-icons-png.flaticon.com/512/684/684908.png" 
+                            alt="location"
+                            style={{
+                              width: '16px',
+                              height: '16px'
+                            }}
+                          />
+                        </span>
                         <div className="suggestion-info">
                           <p className="suggestion-name">{suggestion.name}</p>
                           <p className="suggestion-details">
@@ -262,7 +283,14 @@ const DestinationSearch = ({ destination, onDestinationSelect }) => {
                         className="suggestion-item"
                       >
                         <span className="suggestion-icon">
-                          {getTypeIcon(suggestion.type)}
+                          <img 
+                            src={getTypeIcon(suggestion.type)} 
+                            alt={suggestion.type}
+                            style={{
+                              width: '16px',
+                              height: '16px'
+                            }}
+                          />
                         </span>
                         <div className="suggestion-info">
                           <p className="suggestion-name">{suggestion.name}</p>
@@ -283,7 +311,7 @@ const DestinationSearch = ({ destination, onDestinationSelect }) => {
             {/* Recent Destinations */}
             {recentDestinations.length > 0 && (
               <div className="recent-destinations">
-                <h4>🕒 Recent</h4>
+                <h4>Recent</h4>
                 <div className="destinations-grid">
                   {recentDestinations.map((dest) => (
                     <button
@@ -291,7 +319,6 @@ const DestinationSearch = ({ destination, onDestinationSelect }) => {
                       onClick={() => handleDestinationSelect(dest)}
                       className="destination-chip"
                     >
-                      <span>{getTypeIcon(dest.type)}</span>
                       <span>{dest.name}</span>
                     </button>
                   ))}
@@ -301,7 +328,7 @@ const DestinationSearch = ({ destination, onDestinationSelect }) => {
 
             {/* Quick Popular Destinations - Only show a few */}
             <div className="popular-destinations">
-              <h4>🔥 Quick Select</h4>
+              <h4>Quick Select</h4>
               <div className="destinations-grid">
                 {popularDestinations.slice(0, 6).map((dest) => (
                   <button
@@ -309,7 +336,6 @@ const DestinationSearch = ({ destination, onDestinationSelect }) => {
                     onClick={() => handleDestinationSelect(dest)}
                     className="destination-chip"
                   >
-                    <span>{getTypeIcon(dest.type)}</span>
                     <span>{dest.name}</span>
                   </button>
                 ))}
@@ -322,7 +348,16 @@ const DestinationSearch = ({ destination, onDestinationSelect }) => {
         {destination && (
           <div className="selected-destination">
             <div className="destination-display">
-              <span className="destination-icon">📍</span>
+              <span className="destination-icon">
+                <img 
+                  src="https://cdn-icons-png.flaticon.com/512/684/684908.png" 
+                  alt="destination"
+                  style={{
+                    width: '16px',
+                    height: '16px'
+                  }}
+                />
+              </span>
               <div>
                 <p className="destination-name">{destination}</p>
                 <p className="destination-subtitle">Selected destination</p>
