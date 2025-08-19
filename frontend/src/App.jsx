@@ -1,32 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import axios from 'axios';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import axios from "axios";
+import "./App.css";
 
 // Import components
-import LocationTracker from './components/LocationTracker';
-import DestinationSearch from './components/DestinationSearch';
-import TransportOptions from './components/TransportOptions';
-import TripPlanner from './components/TripPlanner';
-import NotificationPanel from './components/NotificationPanel';
-import RouteMap from './components/RouteMap';
+import Home from "./components/Home";
+import LocationTracker from "./components/LocationTracker";
+import DestinationSearch from "./components/DestinationSearch";
+import TransportOptions from "./components/TransportOptions";
+import TripPlanner from "./components/TripPlanner";
+import NotificationPanel from "./components/NotificationPanel";
+import RouteMap from "./components/RouteMap";
 import Schedules from "./components/Schedules";
 import Predictions from "./components/Predictions";
 import Alerts from "./components/Alerts";
 import ContactUs from "./components/ContactUs";
 import Faq from "./components/Faq";
-import Services from './components/Services';
+import Services from "./components/Services";
 
 const App = () => {
   const [currentLocation, setCurrentLocation] = useState(null);
-  const [destination, setDestination] = useState('');
+  const [destination, setDestination] = useState("");
   const [destinationCoords, setDestinationCoords] = useState(null);
   const [transportOptions, setTransportOptions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [showTravelPlatform, setShowTravelPlatform] = useState(true);
 
-  const API_BASE_URL = 'http://localhost:8083';
+  const API_BASE_URL = "http://localhost:8083";
 
   // Get user's current location
   useEffect(() => {
@@ -35,15 +36,15 @@ const App = () => {
         (position) => {
           setCurrentLocation({
             latitude: position.coords.latitude,
-            longitude: position.coords.longitude
+            longitude: position.coords.longitude,
           });
         },
         (error) => {
-          console.error('Error getting location:', error);
+          console.error("Error getting location:", error);
           // Set Colombo Fort as default location
           setCurrentLocation({
             latitude: 6.9344,
-            longitude: 79.8441
+            longitude: 79.8441,
           });
         }
       );
@@ -56,29 +57,32 @@ const App = () => {
 
     setLoading(true);
     setDestinationCoords(destinationCoords);
-    
+
     try {
       const response = await axios.get(`${API_BASE_URL}/routes/options`, {
         params: {
           fromLat: currentLocation.latitude,
           fromLng: currentLocation.longitude,
           toLat: destinationCoords.latitude,
-          toLng: destinationCoords.longitude
-        }
+          toLng: destinationCoords.longitude,
+        },
       });
-      
-      if (response.data.status === 'success') {
+
+      if (response.data.status === "success") {
         setTransportOptions(response.data.data);
         // Store route data for future map implementation
-        console.log('Route data available for map integration');
+        console.log("Route data available for map integration");
       }
     } catch (error) {
-      console.error('Error fetching transport options:', error);
-      setNotifications(prev => [...prev, {
-        id: Date.now(),
-        type: 'error',
-        message: 'Failed to fetch transport options'
-      }]);
+      console.error("Error fetching transport options:", error);
+      setNotifications((prev) => [
+        ...prev,
+        {
+          id: Date.now(),
+          type: "error",
+          message: "Failed to fetch transport options",
+        },
+      ]);
     }
     setLoading(false);
   };
@@ -92,13 +96,13 @@ const App = () => {
         params: {
           lat: currentLocation.latitude,
           lng: currentLocation.longitude,
-          radius: 1000
-        }
+          radius: 1000,
+        },
       });
-      
-      return response.data.status === 'success' ? response.data.data : [];
+
+      return response.data.status === "success" ? response.data.data : [];
     } catch (error) {
-      console.error('Error fetching nearby stops:', error);
+      console.error("Error fetching nearby stops:", error);
       return [];
     }
   };
@@ -110,37 +114,61 @@ const App = () => {
           {/* Header */}
           <header className="app-header">
             <div className="header-left">
-              <img src="/logo.png" alt="SmartTransport Logo" className="logo" width={50} />
+              <img
+                src="/logo.png"
+                alt="SmartTransport Logo"
+                className="logo"
+                width={50}
+              />
               <h1> SmartTransport</h1>
               <nav className="header-nav">
-                <Link to="/" className="active">Home</Link>
+                <Link to="/" className="active">
+                  Home
+                </Link>
                 <Link to="/services">Services</Link>
                 <Link to="/contact">Contact Us</Link>
                 <Link to="/faq">FAQ</Link>
               </nav>
             </div>
             <div className="header-right">
-              <button className="header-button btn-outline-header">Sign Up</button>
-              <button className="header-button btn-primary-header">Log In</button>
+              <button className="header-button btn-outline-header">
+                Sign Up
+              </button>
+              <button className="header-button btn-primary-header">
+                Log In
+              </button>
             </div>
           </header>
 
           {/* Hero Section */}
           <section className="hero-section">
             <div className="hero-content">
-              <h1>Cost efficient travelling.<br />Worldwide.</h1>
-              <p>Smart Planning integrated solutions for business and independent travellers</p>
+              <center>
+                <h1>
+                  Cost efficient travelling
+                  <br />
+                  Worldwide
+                </h1>
+                <p>
+                  Smart Planning integrated solutions for business and
+                  independent travellers
+                </p>
+              </center>
+
               <div className="hero-cta">
-                <button 
+                <button
                   className="cta-button cta-primary"
                   onClick={() => setShowTravelPlatform(false)}
                 >
                   Start Journey
                 </button>
-                <a href="#features" className="cta-button cta-secondary">Learn More</a>
+                <a href="#features" className="cta-button cta-secondary">
+                  Learn More
+                </a>
               </div>
             </div>
           </section>
+          <Home />
         </>
       ) : (
         <>
@@ -149,13 +177,15 @@ const App = () => {
             <div className="header-left">
               <h1>🚌 SmartTransport</h1>
               <nav className="header-nav">
-                <a href="#" className="active">Journey Planner</a>
+                <a href="#" className="active">
+                  Journey Planner
+                </a>
                 <a href="#">Live Updates</a>
                 <a href="#">My Trips</a>
               </nav>
             </div>
             <div className="header-right">
-              <button 
+              <button
                 className="header-button btn-outline-header"
                 onClick={() => setShowTravelPlatform(true)}
               >
@@ -167,7 +197,7 @@ const App = () => {
           {/* Route Map Section - Only shows when destination is selected */}
           {currentLocation && destinationCoords && (
             <div className="route-map-section">
-              <RouteMap 
+              <RouteMap
                 currentLocation={currentLocation}
                 destination={destinationCoords}
                 transportOptions={transportOptions}
@@ -187,9 +217,12 @@ const App = () => {
                       type="text"
                       className="search-input"
                       placeholder="From where?"
-                      value={currentLocation ? 
-                        `Current Location (${currentLocation.latitude.toFixed(4)}, ${currentLocation.longitude.toFixed(4)})` : 
-                        'Getting your location...'
+                      value={
+                        currentLocation
+                          ? `Current Location (${currentLocation.latitude.toFixed(
+                              4
+                            )}, ${currentLocation.longitude.toFixed(4)})`
+                          : "Getting your location..."
                       }
                       readOnly
                     />
@@ -198,14 +231,14 @@ const App = () => {
               </div>
 
               {/* Location Selection */}
-              <LocationTracker 
+              <LocationTracker
                 currentLocation={currentLocation}
                 onLocationUpdate={setCurrentLocation}
                 getNearbyStops={getNearbyStops}
               />
-              
+
               {/* Destination Search */}
-              <DestinationSearch 
+              <DestinationSearch
                 destination={destination}
                 onDestinationSelect={(dest, coords) => {
                   setDestination(dest);
@@ -221,19 +254,18 @@ const App = () => {
                 </div>
               )}
 
-              <TransportOptions 
-                options={transportOptions}
-                loading={loading}
-              />
+              <TransportOptions options={transportOptions} loading={loading} />
             </div>
           </div>
         </>
       )}
 
       {/* Notifications */}
-      <NotificationPanel 
+      <NotificationPanel
         notifications={notifications}
-        onDismiss={(id) => setNotifications(prev => prev.filter(n => n.id !== id))}
+        onDismiss={(id) =>
+          setNotifications((prev) => prev.filter((n) => n.id !== id))
+        }
       />
     </div>
   );
