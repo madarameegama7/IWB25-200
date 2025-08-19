@@ -106,7 +106,8 @@ const App = () => {
           {/* Header */}
           <header className="app-header">
             <div className="header-left">
-              <h1>🚌 SmartTransport</h1>
+              <img src="/logo.png" alt="SmartTransport Logo" className="logo" width={50} />
+              <h1> SmartTransport</h1>
               <nav className="header-nav">
                 <a href="#" className="active">Home</a>
                 <a href="#">Services/Routes</a>
