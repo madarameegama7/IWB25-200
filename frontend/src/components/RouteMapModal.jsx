@@ -55,7 +55,19 @@ const RouteMapModal = ({ isOpen, onClose, route, currentLocation, destination, a
           maxWidth: '500px',
           width: '90%'
         }}>
-          <h3>🗺️ Route Map</h3>
+          <h3>
+            <img 
+              src="https://cdn-icons-png.flaticon.com/512/2972/2972628.png" 
+              alt="map"
+              style={{
+                width: '18px',
+                height: '18px',
+                marginRight: '8px',
+                verticalAlign: 'middle'
+              }}
+            />
+            Route Map
+          </h3>
           <p>Loading location data...</p>
         </div>
       </div>
@@ -353,7 +365,19 @@ const RouteMapModal = ({ isOpen, onClose, route, currentLocation, destination, a
             >
               ← Back to Routes
             </button>
-            <h3 style={{ margin: 0, fontSize: '18px' }}>🗺️ All Routes to {destination.name || 'Destination'}</h3>
+            <h3 style={{ margin: 0, fontSize: '18px' }}>
+              <img 
+                src="https://cdn-icons-png.flaticon.com/512/2972/2972628.png" 
+                alt="map"
+                style={{
+                  width: '16px',
+                  height: '16px',
+                  marginRight: '6px',
+                  verticalAlign: 'middle'
+                }}
+              />
+              All Routes to {destination.name || 'Destination'}
+            </h3>
           </div>
           <button 
             onClick={onClose}
@@ -387,7 +411,19 @@ const RouteMapModal = ({ isOpen, onClose, route, currentLocation, destination, a
                 <span style={{ color: getRouteColor(option.transportType, index, option.routeNumber), fontWeight: 'bold' }}>
                   {option.routeNumber}
                 </span>
-                <span>{option.transportType === 'bus' ? '🚌' : '🚂'}</span>
+                <span>
+                  <img 
+                    src={option.transportType === 'bus' 
+                      ? 'https://cdn-icons-png.flaticon.com/512/3039/3039008.png'
+                      : 'https://cdn-icons-png.flaticon.com/512/2972/2972402.png'
+                    }
+                    alt={option.transportType}
+                    style={{
+                      width: '14px',
+                      height: '14px'
+                    }}
+                  />
+                </span>
               </div>
             ))}
           </div>
@@ -410,7 +446,19 @@ const RouteMapModal = ({ isOpen, onClose, route, currentLocation, destination, a
             <Marker position={[currentLocation.latitude, currentLocation.longitude]}>
               <Popup>
                 <div>
-                  <strong>📍 Your Location</strong>
+                  <strong>
+                    <img 
+                      src="https://cdn-icons-png.flaticon.com/512/684/684908.png" 
+                      alt="location"
+                      style={{
+                        width: '14px',
+                        height: '14px',
+                        marginRight: '4px',
+                        verticalAlign: 'middle'
+                      }}
+                    />
+                    Your Location
+                  </strong>
                   <br />
                   Starting point for all routes
                 </div>
@@ -504,12 +552,92 @@ const RouteMapModal = ({ isOpen, onClose, route, currentLocation, destination, a
                         <span style={{ color: getRouteColor(option.transportType, index, option.routeNumber) }}>
                           {option.transportType === 'bus' ? `Route ${option.routeNumber}` : `${option.routeNumber}`}
                         </span><br/>
-                        {option.transportType === 'bus' ? '🚌 Bus' : '🚂 Train'}<br/>
+                        {option.transportType === 'bus' ? (
+                          <>
+                            <img 
+                              src="https://cdn-icons-png.flaticon.com/512/3039/3039008.png" 
+                              alt="bus"
+                              style={{
+                                width: '14px',
+                                height: '14px',
+                                marginRight: '4px',
+                                verticalAlign: 'middle'
+                              }}
+                            />
+                            Bus
+                          </>
+                        ) : (
+                          <>
+                            <img 
+                              src="https://cdn-icons-png.flaticon.com/512/2972/2972402.png" 
+                              alt="train"
+                              style={{
+                                width: '14px',
+                                height: '14px',
+                                marginRight: '4px',
+                                verticalAlign: 'middle'
+                              }}
+                            />
+                            Train
+                          </>
+                        )}<br/>
                         Duration: {Math.floor(option.estimatedDuration / 60)}h {option.estimatedDuration % 60}min<br/>
-                        Status: {option.status === 'on_time' ? '✅ On Time' : 
-                                 option.status === 'delayed' ? `⚠️ Delayed ${option.delayMinutes}min` : 
-                                 '❌ Cancelled'}<br/>
-                        <small>🗺️ Following Google Maps-style actual route path</small>
+                        Status: {option.status === 'on_time' ? (
+                          <>
+                            <img 
+                              src="https://cdn-icons-png.flaticon.com/512/5610/5610944.png" 
+                              alt="on time"
+                              style={{
+                                width: '12px',
+                                height: '12px',
+                                marginRight: '3px',
+                                verticalAlign: 'middle'
+                              }}
+                            />
+                            On Time
+                          </>
+                        ) : option.status === 'delayed' ? (
+                          <>
+                            <img 
+                              src="https://cdn-icons-png.flaticon.com/512/5973/5973800.png" 
+                              alt="delayed"
+                              style={{
+                                width: '12px',
+                                height: '12px',
+                                marginRight: '3px',
+                                verticalAlign: 'middle'
+                              }}
+                            />
+                            Delayed {option.delayMinutes}min
+                          </>
+                        ) : (
+                          <>
+                            <img 
+                              src="https://cdn-icons-png.flaticon.com/512/1828/1828843.png" 
+                              alt="cancelled"
+                              style={{
+                                width: '12px',
+                                height: '12px',
+                                marginRight: '3px',
+                                verticalAlign: 'middle'
+                              }}
+                            />
+                            Cancelled
+                          </>
+                        )}<br/>
+                        <small>
+                          <img 
+                            src="https://cdn-icons-png.flaticon.com/512/2972/2972628.png" 
+                            alt="route"
+                            style={{
+                              width: '10px',
+                              height: '10px',
+                              marginRight: '3px',
+                              verticalAlign: 'middle'
+                            }}
+                          />
+                          Following Google Maps-style actual route path
+                        </small>
                       </div>
                     </Popup>
                   </Polyline>
@@ -611,7 +739,17 @@ const RouteMapModal = ({ isOpen, onClose, route, currentLocation, destination, a
                   fontSize: '12px',
                   fontStyle: 'italic'
                 }}>
-                  ℹ️ <strong>Source:</strong> Official data from <a href="https://routemaster.lk/bus/02/" 
+                  <img 
+                    src="https://cdn-icons-png.flaticon.com/512/1827/1827370.png" 
+                    alt="info"
+                    style={{
+                      width: '12px',
+                      height: '12px',
+                      marginRight: '4px',
+                      verticalAlign: 'middle'
+                    }}
+                  />
+                  <strong>Source:</strong> Official data from <a href="https://routemaster.lk/bus/02/" 
                   target="_blank" style={{ color: '#1976d2', textDecoration: 'none' }}>
                   Routemaster.lk</a> - Sri Lanka's authoritative bus route database.
                   This route follows the exact path and stops of the real Route 02 bus.
@@ -635,7 +773,17 @@ const RouteMapModal = ({ isOpen, onClose, route, currentLocation, destination, a
                 fontSize: '16px',
                 fontWeight: 'bold'
               }}>
-                🚌 Route 401 - Elpitiya to Pettah (Colombo) - Official Route
+                <img 
+                  src="https://cdn-icons-png.flaticon.com/512/3039/3039008.png" 
+                  alt="bus"
+                  style={{
+                    width: '16px',
+                    height: '16px',
+                    marginRight: '6px',
+                    verticalAlign: 'middle'
+                  }}
+                />
+                Route 401 - Elpitiya to Pettah (Colombo) - Official Route
               </h3>
               <div style={{ fontSize: '13px', color: '#555', lineHeight: '1.4' }}>
                 <div style={{ marginBottom: '8px' }}>
@@ -663,7 +811,17 @@ const RouteMapModal = ({ isOpen, onClose, route, currentLocation, destination, a
                   fontSize: '12px',
                   fontStyle: 'italic'
                 }}>
-                  ℹ️ <strong>Source:</strong> Official data from <a href="https://routemaster.lk/bus/401/" 
+                  <img 
+                    src="https://cdn-icons-png.flaticon.com/512/1827/1827370.png" 
+                    alt="info"
+                    style={{
+                      width: '12px',
+                      height: '12px',
+                      marginRight: '4px',
+                      verticalAlign: 'middle'
+                    }}
+                  />
+                  <strong>Source:</strong> Official data from <a href="https://routemaster.lk/bus/401/" 
                   target="_blank" style={{ color: '#4caf50', textDecoration: 'none' }}>
                   Routemaster.lk</a> - Verified route serving inland Southern Province communities.
                 </div>
