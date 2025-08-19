@@ -160,7 +160,7 @@ npm install
 npm list react vite
 ```
 
-## 🏃‍♂️ Running the Application
+## Running the Application
 
 ### Option 1: Run Both Services Simultaneously
 
@@ -169,14 +169,14 @@ npm list react vite
 cd backend
 bal run
 ```
-🌐 Backend will start on: `http://localhost:8083`
+Backend will start on: `http://localhost:8083`
 
 **Terminal 2 - Frontend:**
 ```bash
 cd frontend  
 npm run dev
 ```
-🌐 Frontend will start on: `http://localhost:5173`
+Frontend will start on: `http://localhost:5173`
 
 ### Option 2: Using Separate Commands
 
@@ -194,14 +194,14 @@ npm start
 npm run dev
 ```
 
-### 🎉 Access the Application
+### Access the Application
 
 Once both servers are running, open your browser and navigate to:
 **http://localhost:5173**
 
 The application will automatically connect to the backend running on port 8083.
 
-## 📡 API Documentation
+## API Documentation
 
 ### Base URL
 ```
@@ -268,7 +268,7 @@ GET /alerts
 GET /predictions
 ```
 
-## 🧪 Testing with Postman
+## Testing with Postman
 
 ### Import Collection
 1. Open Postman
@@ -302,7 +302,7 @@ Content-Type: application/json
 }
 ```
 
-## 🔧 Development
+## Development
 
 ### Backend Development
 
@@ -371,7 +371,7 @@ const NewComponent = () => {
 export default NewComponent;
 ```
 
-## 🚀 Deployment
+## Deployment
 
 ### Production Build
 
@@ -406,7 +406,7 @@ port = 8083
 cors_origin = "http://localhost:5175"
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -457,7 +457,7 @@ npm install
 - Use React.memo for expensive components
 
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create feature branch (`git checkout -b feature/amazing-feature`)
@@ -473,19 +473,16 @@ npm install
 - Update documentation for API changes
 - Test on multiple browsers before submitting
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Ballerina team for the excellent backend framework
 - OpenStreetMap contributors for map data
 - React community for frontend components
 - Sri Lankan transport authorities
 
-
-
 ---
 
-**🚌 Happy Traveling with Smart Public Transport Assistant! 🚌**
