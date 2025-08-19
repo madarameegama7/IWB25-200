@@ -487,6 +487,175 @@ body {
   color: #ffffff;
 }
 
+/* Toggle Switch Styles */
+.location-toggle {
+  margin-bottom: 1rem;
+  padding: 0.8rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.toggle-switch {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-switch input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: #cbd5e1;
+  border-radius: 24px;
+  transition: background 0.3s;
+}
+
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #ffffff;
+  border-radius: 50%;
+  transition: transform 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background: #2563eb;
+}
+
+.toggle-switch input:checked + .toggle-slider::before {
+  transform: translateX(20px);
+}
+
+.toggle-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+/* Disabled states */
+.manual-location.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.manual-location.disabled h4 {
+  color: #9ca3af;
+}
+
+.location-option.disabled {
+  background: #f9fafb;
+  color: #9ca3af;
+  border-color: #f3f4f6;
+  cursor: not-allowed;
+}
+
+.location-option.disabled:hover {
+  background: #f9fafb;
+  border-color: #f3f4f6;
+  color: #9ca3af;
+}
+
+/* Location Search Styles */
+.location-search-container {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.search-input-wrapper {
+  position: relative;
+}
+
+.location-search-input {
+  width: 100%;
+  padding: 0.75rem 2.5rem 0.75rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.location-search-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.location-search-input:disabled {
+  background: #f9fafb;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.search-loading {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: translateY(-50%) rotate(0deg); }
+  to { transform: translateY(-50%) rotate(360deg); }
+}
+
+.location-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.location-suggestion {
+  padding: 0.75rem;
+  cursor: pointer;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 0.2s;
+}
+
+.location-suggestion:hover {
+  background: #f8fafc;
+}
+
+.location-suggestion:last-child {
+  border-bottom: none;
+}
+
+.suggestion-main {
+  font-weight: 500;
+  color: #1e293b;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.suggestion-details {
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
 /* Nearby Stops - Sidebar Style */
 .nearby-stops {
   border-top: 1px solid #e2e8f0;
@@ -848,35 +1017,39 @@ body {
 
 .search-input {
   width: 100%;
-  padding: 1.2rem 1.2rem 1.2rem 3rem;
-  border: 2px solid #dee2e6;
-  border-radius: 12px;
-  font-size: 1.1rem;
-  transition: all 0.3s ease;
+  padding: 0.75rem 2.5rem 0.75rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: all 0.2s;
   background: #ffffff;
   color: #2c3e50;
+  outline: none;
 }
 
 .search-input:focus {
-  outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .search-input::placeholder {
   color: #6c757d;
 }
 
+.location-search-input::placeholder {
+  color: #6c757d;
+}
+
 .clear-search {
   position: absolute;
-  right: 1.2rem;
+  right: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
   cursor: pointer;
   color: #6c757d;
-  font-size: 1.1rem;
+  font-size: 1rem;
   padding: 0.5rem;
   border-radius: 50%;
   transition: all 0.2s ease;
@@ -910,6 +1083,47 @@ body {
   font-weight: 600;
   color: #495057;
   font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.loading-indicator {
+  animation: spin 1s linear infinite;
+  color: #3498db;
+}
+
+.suggestions-divider {
+  height: 1px;
+  background: #e9ecef;
+  margin: 0;
+}
+
+.api-suggestion {
+  border-left: 3px solid transparent;
+}
+
+.api-suggestion:hover {
+  background: #e8f4fd;
+  border-left-color: #2563eb;
+}
+
+.suggestion-details {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-top: 0.2rem;
+  font-style: italic;
+}
+
+.search-hint {
+  text-align: center;
+  color: #6c757d;
+  font-size: 0.85rem;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 3px solid #17a2b8;
 }
 
 .suggestions-list {
@@ -1116,11 +1330,47 @@ body {
   font-size: 1.5rem;
 }
 
+.route-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.2rem;
+}
+
+.route-number {
+  background: #2563eb;
+  color: #ffffff;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  min-width: 3rem;
+  text-align: center;
+}
+
 .route-name {
   font-size: 1rem;
   font-weight: 600;
   color: #1e293b;
+  margin: 0;
+}
+
+.route-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
   margin-bottom: 0.2rem;
+}
+
+.route-number {
+  background: #2563eb;
+  color: white;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  min-width: 30px;
+  text-align: center;
 }
 
 .transport-type {
@@ -2529,4 +2779,172 @@ body {
     transform: rotate(90deg);
     padding: 0.5rem 0;
   }
+}
+
+/* Departure Times Styles */
+.back-button {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 1rem;
+}
+
+.back-button:hover {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.departure-times {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.departure-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 0.2s;
+}
+
+.departure-item:hover {
+  background-color: #f8fafc;
+}
+
+.departure-item:last-child {
+  border-bottom: none;
+}
+
+.departure-item.departing {
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  border-left: 4px solid #3b82f6;
+}
+
+.departure-item.boarding {
+  background: linear-gradient(135deg, #faf5ff, #e9d5ff);
+  border-left: 4px solid #8b5cf6;
+}
+
+.departure-time {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.departure-time .time {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.departure-time .status {
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.departure-time .status.green {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.departure-time .status.blue {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.departure-time .status.purple {
+  background: #faf5ff;
+  color: #7c3aed;
+}
+
+.departure-time .status.gray {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.departure-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.platform {
+  font-size: 0.9rem;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.train-number {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #475569;
+  background: #e2e8f0;
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+}
+
+.select-departure {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.select-departure:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.departure-info {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.departure-info p {
+  margin: 0.25rem 0;
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+.departure-info strong {
+  color: #1e293b;
+}
+
+/* Updated transport option styles - remove stops */
+.option-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+/* Remove route preview sections */
+.route-preview {
+  display: none;
 }

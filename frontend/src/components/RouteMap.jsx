@@ -18,6 +18,8 @@ const RouteMap = ({ currentLocation, destination }) => {
       shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
     });
 
+    console.log('RouteMap - currentLocation:', currentLocation, 'destination:', destination);
+
     if (!currentLocation || !destination || !mapRef.current || mapInstanceRef.current) return;
 
     // Initialize Leaflet map

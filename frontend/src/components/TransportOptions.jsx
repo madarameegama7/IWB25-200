@@ -1,6 +1,55 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-const TransportOptions = ({ options, loading }) => {
+const TransportOptions = ({ options, loading, onViewMap, onStartJourney }) => {
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [showDepartureTimes, setShowDepartureTimes] = useState(false);
+
+  // Generate realistic departure times based on transport type
+  const generateDepartureTimes = (transportType, routeName) => {
+    const now = new Date();
+    const times = [];
+    
+    if (transportType === 'bus') {
+      // Bus times - more frequent
+      for (let i = 0; i < 8; i++) {
+        const time = new Date(now.getTime() + (i * 15 * 60000)); // Every 15 minutes
+        times.push({
+          time: time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
+          status: i === 0 ? 'departing' : i <= 2 ? 'on_time' : 'scheduled',
+          platform: `Platform ${Math.floor(Math.random() * 5) + 1}`
+        });
+      }
+    } else if (transportType === 'train') {
+      // Train times - less frequent but more scheduled
+      const trainIntervals = [30, 60, 90, 120, 150, 180]; // Different intervals
+      for (let i = 0; i < 6; i++) {
+        const time = new Date(now.getTime() + (trainIntervals[i] * 60000));
+        times.push({
+          time: time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
+          status: i === 0 ? 'boarding' : i <= 1 ? 'on_time' : 'scheduled',
+          platform: `Platform ${Math.floor(Math.random() * 3) + 1}`,
+          trainNumber: `T${Math.floor(Math.random() * 900) + 100}`
+        });
+      }
+    }
+    
+    return times;
+  };
+
+  const handleStartJourney = (option) => {
+    setSelectedOption(option);
+    setShowDepartureTimes(true);
+    if (onStartJourney) {
+      onStartJourney(option);
+    }
+  };
+
+  const handleViewMap = (option) => {
+    if (onViewMap) {
+      onViewMap(option);
+    }
+  };
+
   if (loading) {
     return (
       <div className="transport-options loading">
@@ -36,7 +85,10 @@ const TransportOptions = ({ options, loading }) => {
     const colors = {
       on_time: 'green',
       delayed: 'orange',
-      cancelled: 'red'
+      cancelled: 'red',
+      departing: 'blue',
+      boarding: 'purple',
+      scheduled: 'gray'
     };
     return colors[status] || 'gray';
   };
@@ -45,7 +97,10 @@ const TransportOptions = ({ options, loading }) => {
     const texts = {
       on_time: 'On Time',
       delayed: 'Delayed',
-      cancelled: 'Cancelled'
+      cancelled: 'Cancelled',
+      departing: 'Departing Now',
+      boarding: 'Boarding',
+      scheduled: 'Scheduled'
     };
     return texts[status] || 'Unknown';
   };
@@ -62,10 +117,58 @@ const TransportOptions = ({ options, loading }) => {
     return `${(meters / 1000).toFixed(1)}km walk`;
   };
 
+  // Show departure times modal
+  if (showDepartureTimes && selectedOption) {
+    const departureTimes = generateDepartureTimes(selectedOption.transportType, selectedOption.routeName);
+    
+    return (
+      <div className="transport-options">
+        <div className="section-header">
+          <button 
+            className="back-button"
+            onClick={() => setShowDepartureTimes(false)}
+          >
+            ← Back to Routes
+          </button>
+          <h3>� Departure Times - {selectedOption.routeName}</h3>
+        </div>
+
+        <div className="departure-times">
+          {departureTimes.map((departure, index) => (
+            <div key={index} className={`departure-item ${departure.status}`}>
+              <div className="departure-time">
+                <span className="time">{departure.time}</span>
+                <span className={`status ${getStatusColor(departure.status)}`}>
+                  {getStatusText(departure.status)}
+                </span>
+              </div>
+              <div className="departure-details">
+                <span className="platform">{departure.platform}</span>
+                {departure.trainNumber && (
+                  <span className="train-number">{departure.trainNumber}</span>
+                )}
+              </div>
+              {index === 0 && (
+                <button className="select-departure">
+                  Select This Departure
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div className="departure-info">
+          <p><strong>Duration:</strong> {formatDuration(selectedOption.estimatedDuration)}</p>
+          <p><strong>Walking to stop:</strong> {formatWalkingDistance(selectedOption.walkingDistance)}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="transport-options">
       <div className="section-header">
-        <h3>🚊 Transport Options</h3>
+        <h3>�🚊 Transport Options</h3>
         <p>{options.length} route{options.length !== 1 ? 's' : ''} available</p>
       </div>
 
@@ -74,7 +177,7 @@ const TransportOptions = ({ options, loading }) => {
           <div key={option.id} className={`option-card ${index === 0 ? 'recommended' : ''}`}>
             {index === 0 && (
               <div className="recommendation-badge">
-                ⭐ Recommended
+                ⭐ RECOMMENDED
               </div>
             )}
             
@@ -84,7 +187,10 @@ const TransportOptions = ({ options, loading }) => {
                   {getTransportIcon(option.transportType)}
                 </span>
                 <div className="transport-details">
-                  <h4 className="route-name">{option.routeName}</h4>
+                  <div className="route-header">
+                    <span className="route-number">{option.routeNumber}</span>
+                    <h4 className="route-name">{option.routeName}</h4>
+                  </div>
                   <p className="transport-type">
                     {option.transportType.charAt(0).toUpperCase() + option.transportType.slice(1)} Route
                   </p>
@@ -105,7 +211,7 @@ const TransportOptions = ({ options, loading }) => {
               <div className="detail-item">
                 <span className="detail-icon">⏱️</span>
                 <div className="detail-content">
-                  <p className="detail-label">Duration</p>
+                  <p className="detail-label">DURATION</p>
                   <p className="detail-value">{formatDuration(option.estimatedDuration)}</p>
                 </div>
               </div>
@@ -113,47 +219,23 @@ const TransportOptions = ({ options, loading }) => {
               <div className="detail-item">
                 <span className="detail-icon">🚶</span>
                 <div className="detail-content">
-                  <p className="detail-label">Walking</p>
+                  <p className="detail-label">WALKING</p>
                   <p className="detail-value">{formatWalkingDistance(option.walkingDistance)}</p>
-                </div>
-              </div>
-
-              <div className="detail-item">
-                <span className="detail-icon">🚏</span>
-                <div className="detail-content">
-                  <p className="detail-label">Stops</p>
-                  <p className="detail-value">{option.stops.length} stop{option.stops.length !== 1 ? 's' : ''}</p>
                 </div>
               </div>
             </div>
 
-            {/* Route Stops Preview */}
-            {option.stops && option.stops.length > 0 && (
-              <div className="route-preview">
-                <div className="stops-preview">
-                  {option.stops.slice(0, 2).map((stop, idx) => (
-                    <div key={stop.id} className="stop-preview">
-                      <span className={`stop-indicator ${stop.stopType}`}>
-                        {stop.stopType === 'bus' ? '🚌' : '🚂'}
-                      </span>
-                      <span className="stop-name">{stop.name}</span>
-                      {idx < option.stops.slice(0, 2).length - 1 && (
-                        <span className="route-arrow">→</span>
-                      )}
-                    </div>
-                  ))}
-                  {option.stops.length > 2 && (
-                    <span className="more-stops">+{option.stops.length - 2} more</span>
-                  )}
-                </div>
-              </div>
-            )}
-
             <div className="option-actions">
-              <button className="btn-outline">
+              <button 
+                className="btn-outline"
+                onClick={() => handleViewMap(option)}
+              >
                 📍 View on Map
               </button>
-              <button className="btn-primary">
+              <button 
+                className="btn-primary"
+                onClick={() => handleStartJourney(option)}
+              >
                 🚀 Start Journey
               </button>
             </div>
@@ -169,7 +251,7 @@ const TransportOptions = ({ options, loading }) => {
             <div>
               <p className="stat-label">Fastest Route</p>
               <p className="stat-value">
-                {Math.min(...options.map(o => o.estimatedDuration))} minutes
+                {formatDuration(Math.min(...options.map(o => o.estimatedDuration)))}
               </p>
             </div>
           </div>
