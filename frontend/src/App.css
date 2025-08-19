@@ -582,7 +582,7 @@ body {
 
 .location-search-input {
   width: 100%;
-  padding: 0.75rem 2.5rem 0.75rem 0.75rem;
+  padding: 0.75rem 2.5rem 0.75rem 3rem;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   font-size: 0.9rem;
@@ -1017,7 +1017,7 @@ body {
 
 .search-input {
   width: 100%;
-  padding: 0.75rem 2.5rem 0.75rem 0.75rem;
+  padding: 0.75rem 2.5rem 0.75rem 3rem;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   font-size: 0.9rem;
@@ -2947,4 +2947,155 @@ body {
 /* Remove route preview sections */
 .route-preview {
   display: none;
+}
+
+/* Notification Panel Styles */
+.notification-panel {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1050;
+  max-width: 400px;
+  width: 100%;
+}
+
+.notification {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: slideInRight 0.3s ease-out;
+  backdrop-filter: blur(10px);
+  border-left: 4px solid;
+}
+
+.notification.success {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.9), rgba(34, 197, 94, 0.7));
+  border-left-color: #22c55e;
+  color: #065f46;
+}
+
+.notification.error {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(239, 68, 68, 0.7));
+  border-left-color: #ef4444;
+  color: #7f1d1d;
+}
+
+.notification.warning {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.9), rgba(245, 158, 11, 0.7));
+  border-left-color: #f59e0b;
+  color: #78350f;
+}
+
+.notification.info {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(59, 130, 246, 0.7));
+  border-left-color: #3b82f6;
+  color: #1e3a8a;
+}
+
+.notification.delay {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.9), rgba(168, 85, 247, 0.7));
+  border-left-color: #a855f7;
+  color: #581c87;
+}
+
+.notification-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1;
+}
+
+.notification-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.notification-message {
+  flex: 1;
+}
+
+.notification-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  line-height: 1.2;
+}
+
+.notification-text {
+  font-size: 14px;
+  margin: 0 0 6px 0;
+  line-height: 1.4;
+  opacity: 0.9;
+}
+
+.notification-time {
+  font-size: 12px;
+  opacity: 0.7;
+  font-weight: 500;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  margin-left: 8px;
+  opacity: 0.7;
+  transition: all 0.2s;
+  color: inherit;
+}
+
+.notification-close:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Transport delay status indicators */
+.status-indicator.delayed {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  animation: pulse 2s infinite;
+}
+
+.status-indicator.cancelled {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Delay notification specific styles */
+.delay-info {
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-left: 8px;
 }
