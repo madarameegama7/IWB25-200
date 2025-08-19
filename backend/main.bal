@@ -5,13 +5,13 @@ import backend.alerts as alerts;
 import backend.location as location;
 import backend.trips as trips;
 
-// Create listener on port 8083
-listener http:Listener backendEP = new(8083);
+// Create listener on port 8085 (changed from 8084 due to port conflict)
+listener http:Listener backendEP = new(8085);
 
 // Service-level CORS config applies globally to all resources
 @http:ServiceConfig {
     cors: {
-        allowOrigins: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175"],
+        allowOrigins: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:3000"],
         allowMethods: ["GET", "POST"],
         allowCredentials: false,
         allowHeaders: ["CORELATION_ID"],
