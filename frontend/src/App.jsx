@@ -1,18 +1,23 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect,useCallback } from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import axios from 'axios';
 import './App.css';
 
 // Import components
-import LocationTracker from './components/LocationTracker';
-import DestinationSearch from './components/DestinationSearch';
-import TransportOptions from './components/TransportOptions';
-import TripPlanner from './components/TripPlanner';
+import Home from "./components/Home";
+import LocationTracker from "./components/LocationTracker";
+import DestinationSearch from "./components/DestinationSearch";
+import TransportOptions from "./components/TransportOptions";
+import TripPlanner from "./components/TripPlanner";
+import RouteMap from "./components/RouteMap";
 import NotificationPanel from './components/NotificationPanel';
-import RouteMap from './components/RouteMap';
 import RouteMapModal from './components/RouteMapModal';
 import Schedules from "./components/Schedules";
 import Predictions from "./components/Predictions";
 import Alerts from "./components/Alerts";
+import ContactUs from "./components/ContactUs";
+import Faq from "./components/Faq";
+import Services from "./components/Services";
 
 const App = () => {
   const [currentLocation, setCurrentLocation] = useState(null);
@@ -26,7 +31,7 @@ const App = () => {
   const [showRouteMapModal, setShowRouteMapModal] = useState(false);
   const [selectedRouteForMap, setSelectedRouteForMap] = useState(null);
 
-  const API_BASE_URL = 'http://localhost:8085';
+  const API_BASE_URL = "http://localhost:8085";
 
   // Get user's current location
   useEffect(() => {
@@ -35,15 +40,15 @@ const App = () => {
         (position) => {
           setCurrentLocation({
             latitude: position.coords.latitude,
-            longitude: position.coords.longitude
+            longitude: position.coords.longitude,
           });
         },
         (error) => {
-          console.error('Error getting location:', error);
+          console.error("Error getting location:", error);
           // Set Colombo Fort as default location
           setCurrentLocation({
             latitude: 6.9344,
-            longitude: 79.8441
+            longitude: 79.8441,
           });
           setFromLocationName('Colombo Fort');
         },
@@ -314,6 +319,8 @@ const App = () => {
     if (!currentLocation) return;
 
     setLoading(true);
+    setDestinationCoords(destinationCoords);
+
     
     // Temporary realistic data based on destination while backend is being debugged
     const getRealisticRouteData = (lat, lng) => {
@@ -518,9 +525,25 @@ const App = () => {
           fromLat: currentLocation.latitude,
           fromLng: currentLocation.longitude,
           toLat: destinationCoords.latitude,
-          toLng: destinationCoords.longitude
-        }
+          toLng: destinationCoords.longitude,
+        },
       });
+
+      if (response.data.status === "success") {
+        setTransportOptions(response.data.data);
+        // Store route data for future map implementation
+        console.log("Route data available for map integration");
+      }
+    } catch (error) {
+      console.error("Error fetching transport options:", error);
+      setNotifications((prev) => [
+        ...prev,
+        {
+          id: Date.now(),
+          type: "error",
+          message: "Failed to fetch transport options",
+        },
+      ]);
       
       console.log('API Response:', response.data);
       
@@ -592,13 +615,13 @@ const App = () => {
         params: {
           lat: currentLocation.latitude,
           lng: currentLocation.longitude,
-          radius: 1000
-        }
+          radius: 1000,
+        },
       });
-      
-      return response.data.status === 'success' ? response.data.data : [];
+
+      return response.data.status === "success" ? response.data.data : [];
     } catch (error) {
-      console.error('Error fetching nearby stops:', error);
+      console.error("Error fetching nearby stops:", error);
       return [];
     }
   };
@@ -610,48 +633,61 @@ const App = () => {
           {/* Header */}
           <header className="app-header">
             <div className="header-left">
-              <h1>
-                <img 
-                  src="https://cdn-icons-png.flaticon.com/512/3774/3774299.png" 
-                  alt="bus"
-                  style={{
-                    width: '24px',
-                    height: '24px',
-                    marginRight: '8px',
-                    verticalAlign: 'middle'
-                  }}
-                />
-                SmartTransport
-              </h1>
+              <img
+                src="/logo.png"
+                alt="SmartTransport Logo"
+                className="logo"
+                width={50}
+              />
+              <h1> SmartTransport</h1>
               <nav className="header-nav">
-                <a href="#" className="active">Home</a>
-                <a href="#">Services/Routes</a>
-                <a href="#">Contact Us</a>
-                <a href="#">FAQ</a>
+                <Link to="/" className="active">
+                  Home
+                </Link>
+                <Link to="/services">Services</Link>
+                <Link to="/contact">Contact Us</Link>
+                <Link to="/faq">FAQ</Link>
               </nav>
             </div>
             <div className="header-right">
-              <button className="header-button btn-outline-header">Sign Up</button>
-              <button className="header-button btn-primary-header">Log In</button>
+              <button className="header-button btn-outline-header">
+                Sign Up
+              </button>
+              <button className="header-button btn-primary-header">
+                Log In
+              </button>
             </div>
           </header>
 
           {/* Hero Section */}
           <section className="hero-section">
             <div className="hero-content">
-              <h1>Cost efficient travelling.<br />Worldwide.</h1>
-              <p>Smart Planning integrated solutions for business and independent travellers</p>
+              <center>
+                <h1>
+                  Cost efficient travelling
+                  <br />
+                  Worldwide
+                </h1>
+                <p>
+                  Smart Planning integrated solutions for business and
+                  independent travellers
+                </p>
+              </center>
+
               <div className="hero-cta">
-                <button 
+                <button
                   className="cta-button cta-primary"
                   onClick={() => setShowTravelPlatform(false)}
                 >
                   Start Journey
                 </button>
-                <a href="#features" className="cta-button cta-secondary">Learn More</a>
+                <a href="#features" className="cta-button cta-secondary">
+                  Learn More
+                </a>
               </div>
             </div>
           </section>
+          <Home />
         </>
       ) : (
         <>
@@ -672,7 +708,9 @@ const App = () => {
                 SmartTransport
               </h1>
               <nav className="header-nav">
-                <a href="#" className="active">Journey Planner</a>
+                <a href="#" className="active">
+                  Journey Planner
+                </a>
                 <a href="#">Live Updates</a>
                 <a href="#">My Trips</a>
               </nav>
@@ -710,6 +748,7 @@ const App = () => {
           {console.log('Checking RouteMap conditions - currentLocation:', !!currentLocation, 'destinationCoords:', !!destinationCoords)}
           {currentLocation && destinationCoords ? (
             <div className="route-map-section">
+              
               {console.log('✓ Rendering RouteMap with currentLocation:', currentLocation, 'destination:', destinationCoords)}
               <RouteMap 
                 currentLocation={currentLocation}
@@ -744,9 +783,12 @@ const App = () => {
                       type="text"
                       className="search-input"
                       placeholder="From where?"
-                      value={currentLocation ? 
-                        fromLocationName || 'Current Location' : 
-                        'Getting your location...'
+                      value={
+                        currentLocation
+                          ? `Current Location (${currentLocation.latitude.toFixed(
+                              4
+                            )}, ${currentLocation.longitude.toFixed(4)})`
+                          : "Getting your location..."
                       }
                       readOnly
                     />
@@ -755,14 +797,14 @@ const App = () => {
               </div>
 
               {/* Location Selection */}
-              <LocationTracker 
+              <LocationTracker
                 currentLocation={currentLocation}
                 onLocationUpdate={handleLocationUpdate}
                 getNearbyStops={getNearbyStops}
               />
-              
+
               {/* Destination Search */}
-              <DestinationSearch 
+              <DestinationSearch
                 destination={destination}
                 onDestinationSelect={(dest, coords) => {
                   console.log('Destination selected:', dest, 'Coordinates:', coords);
@@ -781,6 +823,7 @@ const App = () => {
                 </div>
               )}
 
+              
               <TransportOptions 
                 options={transportOptions}
                 loading={loading}
@@ -793,9 +836,11 @@ const App = () => {
       )}
 
       {/* Notifications */}
-      <NotificationPanel 
+      <NotificationPanel
         notifications={notifications}
-        onDismiss={(id) => setNotifications(prev => prev.filter(n => n.id !== id))}
+        onDismiss={(id) =>
+          setNotifications((prev) => prev.filter((n) => n.id !== id))
+        }
       />
 
       {/* Route Map Modal */}
@@ -811,4 +856,19 @@ const App = () => {
   );
 };
 
-export default App;
+// Wrap the App component with Router
+const AppWithRouter = () => {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<App />} />
+        <Route path="/contact" element={<ContactUs />} />
+        {/* Add other routes as needed */}
+        <Route path="/services" element={<Services />} />
+        <Route path="/faq" element={<Faq />} />
+      </Routes>
+    </Router>
+  );
+};
+
+export default AppWithRouter;
