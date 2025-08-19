@@ -54,7 +54,10 @@ const TransportOptions = ({ options, loading, onViewMap, onStartJourney }) => {
     return (
       <div className="transport-options loading">
         <div className="section-header">
-          <h3>🔄 Finding Transport Options...</h3>
+          <h3>
+            <img src="https://cdn-icons-png.flaticon.com/512/3305/3305219.png" alt="loading" style={{width: '20px', height: '20px', marginRight: '8px', verticalAlign: 'middle'}} />
+            Finding Transport Options...
+          </h3>
         </div>
       </div>
     );
@@ -64,7 +67,7 @@ const TransportOptions = ({ options, loading, onViewMap, onStartJourney }) => {
     return (
       <div className="transport-options empty">
         <div className="empty-state">
-          <span className="empty-icon">🗺️</span>
+          <img src="https://cdn-icons-png.flaticon.com/512/2776/2776067.png" alt="no routes" style={{width: '48px', height: '48px', marginBottom: '16px'}} />
           <h3>No routes found</h3>
           <p>Try selecting a destination to see transport options</p>
         </div>
@@ -74,11 +77,11 @@ const TransportOptions = ({ options, loading, onViewMap, onStartJourney }) => {
 
   const getTransportIcon = (type) => {
     const icons = {
-      bus: '🚌',
-      train: '🚂',
-      combined: '🚌🚂'
+      bus: 'https://cdn-icons-png.flaticon.com/512/3039/3039008.png',
+      train: 'https://cdn-icons-png.flaticon.com/512/2972/2972402.png',
+      combined: 'https://cdn-icons-png.flaticon.com/512/3039/3039008.png'
     };
-    return icons[type] || '🚊';
+    return icons[type] || 'https://cdn-icons-png.flaticon.com/512/2972/2972563.png';
   };
 
   const getStatusColor = (status) => {
@@ -184,7 +187,7 @@ const TransportOptions = ({ options, loading, onViewMap, onStartJourney }) => {
             <div className="option-header">
               <div className="transport-info">
                 <span className="transport-icon">
-                  {getTransportIcon(option.transportType)}
+                  <img src={getTransportIcon(option.transportType)} alt="transport" style={{width: '24px', height: '24px'}} />
                 </span>
                 <div className="transport-details">
                   <div className="route-header">
@@ -209,7 +212,9 @@ const TransportOptions = ({ options, loading, onViewMap, onStartJourney }) => {
 
             <div className="option-details">
               <div className="detail-item">
-                <span className="detail-icon">⏱️</span>
+                <span className="detail-icon">
+                  <img src="https://cdn-icons-png.flaticon.com/512/2784/2784403.png" alt="duration" style={{width: '20px', height: '20px'}} />
+                </span>
                 <div className="detail-content">
                   <p className="detail-label">DURATION</p>
                   <p className="detail-value">{formatDuration(option.estimatedDuration)}</p>
@@ -217,7 +222,9 @@ const TransportOptions = ({ options, loading, onViewMap, onStartJourney }) => {
               </div>
 
               <div className="detail-item">
-                <span className="detail-icon">🚶</span>
+                <span className="detail-icon">
+                  <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png" alt="walking" style={{width: '20px', height: '20px'}} />
+                </span>
                 <div className="detail-content">
                   <p className="detail-label">WALKING</p>
                   <p className="detail-value">{formatWalkingDistance(option.walkingDistance)}</p>
@@ -230,13 +237,15 @@ const TransportOptions = ({ options, loading, onViewMap, onStartJourney }) => {
                 className="btn-outline"
                 onClick={() => handleViewMap(option)}
               >
-                📍 View on Map
+                <img src="https://cdn-icons-png.flaticon.com/512/2776/2776067.png" alt="map" style={{width: '16px', height: '16px', marginRight: '4px', verticalAlign: 'middle'}} />
+                View on Map
               </button>
               <button 
                 className="btn-primary"
                 onClick={() => handleStartJourney(option)}
               >
-                🚀 Start Journey
+                <img src="https://cdn-icons-png.flaticon.com/512/3039/3039415.png" alt="start" style={{width: '16px', height: '16px', marginRight: '4px', verticalAlign: 'middle'}} />
+                Start Journey
               </button>
             </div>
           </div>
@@ -247,7 +256,9 @@ const TransportOptions = ({ options, loading, onViewMap, onStartJourney }) => {
       <div className="options-summary">
         <div className="summary-stats">
           <div className="stat-item">
-            <span className="stat-icon">⚡</span>
+            <span className="stat-icon">
+              <img src="https://cdn-icons-png.flaticon.com/512/4727/4727424.png" alt="fastest" style={{width: '20px', height: '20px'}} />
+            </span>
             <div>
               <p className="stat-label">Fastest Route</p>
               <p className="stat-value">
@@ -257,7 +268,9 @@ const TransportOptions = ({ options, loading, onViewMap, onStartJourney }) => {
           </div>
 
           <div className="stat-item">
-            <span className="stat-icon">🚶</span>
+            <span className="stat-icon">
+              <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png" alt="walking" style={{width: '20px', height: '20px'}} />
+            </span>
             <div>
               <p className="stat-label">Least Walking</p>
               <p className="stat-value">
@@ -267,7 +280,9 @@ const TransportOptions = ({ options, loading, onViewMap, onStartJourney }) => {
           </div>
 
           <div className="stat-item">
-            <span className="stat-icon">🎯</span>
+            <span className="stat-icon">
+              <img src="https://cdn-icons-png.flaticon.com/512/5610/5610944.png" alt="on time" style={{width: '20px', height: '20px'}} />
+            </span>
             <div>
               <p className="stat-label">On Time</p>
               <p className="stat-value">

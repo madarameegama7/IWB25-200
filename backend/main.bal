@@ -4,6 +4,7 @@ import backend.predictions as predictions;
 import backend.alerts as alerts;
 import backend.location as location;
 import backend.trips as trips;
+import backend.delays as delays;
 
 // Create listener on port 8085 (changed from 8084 due to port conflict)
 listener http:Listener backendEP = new(8085);
@@ -155,14 +156,39 @@ service / on backendEP {
     // Get delay status for specific route and date
     resource function get delays/status(http:Caller caller, http:Request req,
                                       string route_id, string? date) returns error? {
-        json data = alerts:getAlerts();
+        json delayData = delays:getTransportDelays(route_id);
         json response = {
             "status": "success",
-            "data": data,
+            "data": delayData,
             "route_id": route_id,
             "date": date
         };
         check caller->respond(response);
+    }
+
+    // Get batch delays for multiple routes
+    resource function get delays/batch(http:Caller caller, http:Request req,
+                                     string route_ids) returns error? {
+        // For now, handle single route - can extend later for multiple
+        json delayData = delays:getTransportDelays(route_ids);
+        json response = {
+            "status": "success",
+            "data": [delayData],
+            "count": 1
+        };
+        check caller->respond(response);
+    }
+
+    // Get service alerts and disruptions
+    resource function get delays/alerts(http:Caller caller, http:Request req) returns error? {
+        json serviceAlerts = delays:getServiceAlerts();
+        check caller->respond(serviceAlerts);
+    }
+
+    // Get emergency service notifications
+    resource function get delays/emergency(http:Caller caller, http:Request req) returns error? {
+        json emergencyAlerts = delays:getEmergencyAlerts();
+        check caller->respond(emergencyAlerts);
     }
 
     // Legacy endpoints (keeping for backward compatibility)
