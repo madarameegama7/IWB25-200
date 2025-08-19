@@ -215,7 +215,19 @@ const LocationTracker = ({ currentLocation, onLocationUpdate, getNearbyStops }) 
   return (
     <div className="location-tracker">
       <div className="location-header">
-        <h3>📍 Your Location</h3>
+        <h3>
+          <img 
+            src="https://cdn-icons-png.flaticon.com/512/684/684908.png" 
+            alt="location"
+            style={{
+              width: '16px',
+              height: '16px',
+              marginRight: '8px',
+              verticalAlign: 'middle'
+            }}
+          />
+          Your Location
+        </h3>
       </div>
 
       <div className="location-content">
@@ -266,7 +278,19 @@ const LocationTracker = ({ currentLocation, onLocationUpdate, getNearbyStops }) 
           </div>
         ) : (
           <div className="location-prompt">
-            <p>📍 We need your location to find nearby transport options</p>
+            <p>
+              <img 
+                src="https://cdn-icons-png.flaticon.com/512/684/684908.png" 
+                alt="location"
+                style={{
+                  width: '16px',
+                  height: '16px',
+                  marginRight: '8px',
+                  verticalAlign: 'middle'
+                }}
+              />
+              We need your location to find nearby transport options
+            </p>
             <button onClick={handleGetLocation} className="btn-primary">
               📱 Get My Location
             </button>
@@ -322,7 +346,18 @@ const LocationTracker = ({ currentLocation, onLocationUpdate, getNearbyStops }) 
                 <div key={stop.id} className="stop-item">
                   <div className="stop-info">
                     <span className={`stop-type ${stop.stopType}`}>
-                      {stop.stopType === 'bus' ? '🚌' : '🚂'}
+                      <img 
+                        src={stop.stopType === 'bus' 
+                          ? 'https://cdn-icons-png.flaticon.com/512/3039/3039008.png' 
+                          : 'https://cdn-icons-png.flaticon.com/512/2972/2972402.png'
+                        }
+                        alt={stop.stopType}
+                        style={{
+                          width: '16px',
+                          height: '16px',
+                          marginRight: '8px'
+                        }}
+                      />
                     </span>
                     <div>
                       <p className="stop-name">{stop.name}</p>
