@@ -4,7 +4,10 @@ const DestinationSearch = ({ destination, onDestinationSelect }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [apiSuggestions, setApiSuggestions] = useState([]);
   const searchRef = useRef(null);
+  const searchTimeoutRef = useRef(null);
 
   // Handle clicking outside to close suggestions
   useEffect(() => {
@@ -26,6 +29,7 @@ const DestinationSearch = ({ destination, onDestinationSelect }) => {
     { name: 'Pettah Market', lat: 6.9354, lng: 79.8500, type: 'market' },
     { name: 'Bambalapitiya Junction', lat: 6.8887, lng: 79.8590, type: 'junction' },
     { name: 'Nugegoda Town', lat: 6.8659, lng: 79.8977, type: 'town' },
+    { name: 'Homagama', lat: 6.8439, lng: 80.0021, type: 'town' },
     { name: 'University of Colombo', lat: 6.9022, lng: 79.8607, type: 'university' },
     { name: 'Bandaranaike Memorial International Conference Hall', lat: 6.9147, lng: 79.8731, type: 'conference' },
     { name: 'Kandy City Center', lat: 7.2906, lng: 80.6337, type: 'city' },
@@ -38,18 +42,79 @@ const DestinationSearch = ({ destination, onDestinationSelect }) => {
 
   const recentDestinations = JSON.parse(localStorage.getItem('recentDestinations') || '[]');
 
+  // Function to search locations using Nominatim API
+  const searchLocations = async (query) => {
+    if (!query || query.length < 3) {
+      setApiSuggestions([]);
+      return;
+    }
+
+    setSearchLoading(true);
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', Sri Lanka')}&limit=5&addressdetails=1`,
+        {
+          headers: {
+            'User-Agent': 'UniConnect-Sri-Lanka-Transport/1.0',
+            'Accept': 'application/json'
+          }
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('API search results for query:', query, data);
+        
+        const locationSuggestions = data.map(item => ({
+          name: item.display_name.split(',')[0],
+          display_name: item.display_name,
+          lat: parseFloat(item.lat),
+          lng: parseFloat(item.lon),
+          type: 'searched',
+          isFromAPI: true
+        }));
+        
+        console.log('Processed location suggestions:', locationSuggestions);
+        setApiSuggestions(locationSuggestions);
+      }
+    } catch (error) {
+      console.error('Location search error:', error);
+      setApiSuggestions([]);
+    }
+    setSearchLoading(false);
+  };
+
   const handleSearch = (query) => {
     setSearchQuery(query);
     
+    // Clear previous timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    
     if (query.length > 0) {
+      // Filter popular destinations locally
       const filtered = popularDestinations.filter(dest =>
         dest.name.toLowerCase().includes(query.toLowerCase())
       );
       setSuggestions(filtered);
+      
+      // Search via API if query is long enough
+      if (query.length >= 3) {
+        // Debounce search with 500ms delay
+        searchTimeoutRef.current = setTimeout(() => {
+          searchLocations(query);
+        }, 500);
+      } else {
+        setApiSuggestions([]);
+        setSearchLoading(false);
+      }
+      
       setShowSuggestions(true);
     } else {
       // Show all destinations when search is empty but input is focused
       setSuggestions(popularDestinations);
+      setApiSuggestions([]);
       setShowSuggestions(true);
     }
   };
@@ -60,9 +125,15 @@ const DestinationSearch = ({ destination, onDestinationSelect }) => {
         dest.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setSuggestions(filtered);
+      
+      // Trigger API search if query is long enough
+      if (searchQuery.length >= 3) {
+        searchLocations(searchQuery);
+      }
     } else {
-      // Show all destinations when input is focused and empty
+      // Show popular destinations as suggestions when focused with empty search
       setSuggestions(popularDestinations);
+      setApiSuggestions([]);
     }
     setShowSuggestions(true);
   };
@@ -71,12 +142,32 @@ const DestinationSearch = ({ destination, onDestinationSelect }) => {
     setSearchQuery(dest.name);
     setShowSuggestions(false);
     
+    // Ensure coordinates are properly formatted and valid
+    let coordinates;
+    if (dest.lat !== undefined && dest.lng !== undefined) {
+      coordinates = {
+        latitude: parseFloat(dest.lat),
+        longitude: parseFloat(dest.lng)
+      };
+    } else {
+      console.error('Invalid coordinates for destination:', dest);
+      return;
+    }
+    
+    // Validate coordinates are numbers
+    if (isNaN(coordinates.latitude) || isNaN(coordinates.longitude)) {
+      console.error('Invalid coordinate values:', coordinates);
+      return;
+    }
+    
+    console.log('DestinationSearch - Selected:', dest.name, 'Coordinates:', coordinates);
+    
     // Save to recent destinations
     const recent = JSON.parse(localStorage.getItem('recentDestinations') || '[]');
     const updated = [dest, ...recent.filter(r => r.name !== dest.name)].slice(0, 5);
     localStorage.setItem('recentDestinations', JSON.stringify(updated));
     
-    onDestinationSelect(dest.name, { latitude: dest.lat, longitude: dest.lng });
+    onDestinationSelect(dest.name, coordinates);
   };
 
   const getTypeIcon = (type) => {
@@ -106,10 +197,9 @@ const DestinationSearch = ({ destination, onDestinationSelect }) => {
         {/* Search Input */}
         <div className="search-input-container" ref={searchRef}>
           <div className="search-input-wrapper">
-            <span className="search-icon">🔍</span>
             <input
               type="text"
-              placeholder="Type city name or select from the list below..."
+              placeholder="🔍 Type any location, street, or landmark..."
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
               onFocus={handleInputFocus}
@@ -120,6 +210,7 @@ const DestinationSearch = ({ destination, onDestinationSelect }) => {
                 onClick={() => {
                   setSearchQuery('');
                   setSuggestions(popularDestinations);
+                  setApiSuggestions([]);
                   setShowSuggestions(true);
                 }}
                 className="clear-search"
@@ -130,34 +221,64 @@ const DestinationSearch = ({ destination, onDestinationSelect }) => {
           </div>
 
           {/* Search Suggestions */}
-          {showSuggestions && suggestions.length > 0 && (
+          {showSuggestions && (suggestions.length > 0 || apiSuggestions.length > 0) && (
             <div className="suggestions-dropdown">
-              <div className="suggestions-header">
-                <span>📍 All Locations ({suggestions.length})</span>
-              </div>
-              <div className="suggestions-list">
-                {suggestions.map((suggestion) => (
-                  <button
-                    key={suggestion.name}
-                    onClick={() => handleDestinationSelect(suggestion)}
-                    className="suggestion-item"
-                  >
-                    <span className="suggestion-icon">
-                      {getTypeIcon(suggestion.type)}
-                    </span>
-                    <div className="suggestion-info">
-                      <p className="suggestion-name">{suggestion.name}</p>
-                      <p className="suggestion-type">{suggestion.type}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
+              {/* API Search Results */}
+              {apiSuggestions.length > 0 && (
+                <>
+                  <div className="suggestions-header">
+                    <span>🔍 Search Results</span>
+                    {searchLoading && <span className="loading-indicator">🔄</span>}
+                  </div>
+                  <div className="suggestions-list">
+                    {apiSuggestions.map((suggestion, index) => (
+                      <button
+                        key={`api-${index}`}
+                        onClick={() => handleDestinationSelect(suggestion)}
+                        className="suggestion-item api-suggestion"
+                      >
+                        <span className="suggestion-icon">📍</span>
+                        <div className="suggestion-info">
+                          <p className="suggestion-name">{suggestion.name}</p>
+                          <p className="suggestion-details">
+                            {suggestion.display_name.split(',').slice(1, 3).join(',')}
+                          </p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+              
+              {/* Popular Destinations */}
+              {suggestions.length > 0 && (
+                <>
+                  {apiSuggestions.length > 0 && <div className="suggestions-divider"></div>}
+                  <div className="suggestions-list">
+                    {suggestions.map((suggestion) => (
+                      <button
+                        key={suggestion.name}
+                        onClick={() => handleDestinationSelect(suggestion)}
+                        className="suggestion-item"
+                      >
+                        <span className="suggestion-icon">
+                          {getTypeIcon(suggestion.type)}
+                        </span>
+                        <div className="suggestion-info">
+                          <p className="suggestion-name">{suggestion.name}</p>
+                          <p className="suggestion-type">{suggestion.type}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>
 
-        {/* Quick Selection */}
-        {!showSuggestions && (
+        {/* Quick Selection - Only show when not searching */}
+        {!showSuggestions && searchQuery.length === 0 && (
           <>
             {/* Recent Destinations */}
             {recentDestinations.length > 0 && (
@@ -178,11 +299,11 @@ const DestinationSearch = ({ destination, onDestinationSelect }) => {
               </div>
             )}
 
-            {/* Popular Destinations */}
+            {/* Quick Popular Destinations - Only show a few */}
             <div className="popular-destinations">
-              <h4>🔥 Popular Destinations</h4>
+              <h4>🔥 Quick Select</h4>
               <div className="destinations-grid">
-                {popularDestinations.slice(0, 8).map((dest) => (
+                {popularDestinations.slice(0, 6).map((dest) => (
                   <button
                     key={dest.name}
                     onClick={() => handleDestinationSelect(dest)}
