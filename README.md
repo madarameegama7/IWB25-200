@@ -3,7 +3,7 @@
 
 An AI-powered public transport assistant application that provides intelligent transport recommendations in Sri Lanka, featuring real-time tracking, schedule optimization, and route planning with interactive maps.
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Project Overview](#project-overview)
 - [Features](#features)
@@ -18,7 +18,7 @@ An AI-powered public transport assistant application that provides intelligent t
 - [Contributing](#contributing)
 - [License](#license)
 
-## 🎯 Project Overview
+## Project Overview
 
 The Smart Public Transport Assistant is a comprehensive web application designed to revolutionize public transportation in Sri Lanka. It combines real-time data processing, intelligent route planning, and user-friendly interfaces to provide the best travel experience for commuters.
 
@@ -30,28 +30,26 @@ The Smart Public Transport Assistant is a comprehensive web application designed
 - **Smart Notifications** - Real-time alerts and delay notifications
 - **AI-powered Predictions** - Intelligent delay predictions and route optimization
 
-## ✨ Features
+## Features
 
 ### Section 1: Real-Time Journey Planning
-- 📍 **Automatic GPS Detection** - Continuously track user's current location
-- 🔍 **Destination Search** - Autocomplete search with city suggestions
-- 🚌 **Multi-Modal Results** - Bus, train, and combined transport options
-- ⏱️ **Live Timetables** - Real-time schedules with delay information
-- 🗺️ **Route Visualization** - Interactive map showing complete routes
+-  **Automatic GPS Detection** - Continuously track user's current location
+-  **Destination Search** - Autocomplete search with city suggestions
+-  **Multi-Modal Results** - Bus, train, and combined transport options
+-  **Live Timetables** - Real-time schedules with delay information
+-  **Route Visualization** - Interactive map showing complete routes
 
 ### Section 2: Advanced Journey Planning
-- 📅 **Future Trip Planning** - Schedule trips up to 7 days in advance
-- ⏰ **Time Preferences** - Departure or arrival time options
-- 🔄 **Alternative Routes** - Multiple route suggestions with comparisons
-- 🔔 **Smart Notifications** - Schedule reminders and delay alerts
-- 💰 **Cost Comparison** - Fare information for different transport options
+- **Future Trip Planning** - Schedule trips up to 7 days in advance
+- **Time Preferences** - Departure or arrival time options
+- **Alternative Routes** - Multiple route suggestions with comparisons
+- **Smart Notifications** - Schedule reminders and delay alerts
+- **Cost Comparison** - Fare information for different transport options
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 ### Backend
 - **Framework**: Ballerina
-- **Port**: 8083
-- **Database**: Mock data (PostgreSQL ready)
 - **APIs**: RESTful services with CORS support
 - **Modules**: Modular architecture (alerts, auth, location, predictions, schedules, trips)
 
@@ -61,7 +59,6 @@ The Smart Public Transport Assistant is a comprehensive web application designed
 - **Styling**: CSS3 with responsive design
 - **Maps**: Leaflet with OpenStreetMap
 - **HTTP Client**: Axios
-- **Port**: 5175
 
 ### Additional Tools
 - **Maps**: OpenStreetMap with Leaflet
@@ -135,7 +132,7 @@ Before running the Smart Public Transport Assistant, ensure you have the followi
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/IWB25-200.git
+git clone https://github.com/madarameegama7/IWB25-200.git
 cd IWB25-200
 ```
 
@@ -179,7 +176,7 @@ bal run
 cd frontend  
 npm run dev
 ```
-🌐 Frontend will start on: `http://localhost:5175`
+🌐 Frontend will start on: `http://localhost:5173`
 
 ### Option 2: Using Separate Commands
 
@@ -200,7 +197,7 @@ npm run dev
 ### 🎉 Access the Application
 
 Once both servers are running, open your browser and navigate to:
-**http://localhost:5175**
+**http://localhost:5173**
 
 The application will automatically connect to the backend running on port 8083.
 
@@ -459,15 +456,6 @@ npm install
 - Optimize images and assets
 - Use React.memo for expensive components
 
-## 📱 Browser Support
-
-| Browser | Version | Status |
-|---------|---------|--------|
-| Chrome | Latest | ✅ Fully Supported |
-| Firefox | Latest | ✅ Fully Supported |
-| Safari | Latest | ✅ Fully Supported |
-| Edge | Latest | ✅ Fully Supported |
-| IE | Any | ❌ Not Supported |
 
 ## 🤝 Contributing
 
@@ -489,15 +477,12 @@ npm install
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 👥 Authors
-
-
 ## 🙏 Acknowledgments
 
 - Ballerina team for the excellent backend framework
 - OpenStreetMap contributors for map data
 - React community for frontend components
-- Sri Lankan transport authorities for inspiration
+- Sri Lankan transport authorities
 
 
 
