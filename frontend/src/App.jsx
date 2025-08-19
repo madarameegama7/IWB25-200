@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import axios from 'axios';
 import './App.css';
 
@@ -12,6 +13,9 @@ import RouteMap from './components/RouteMap';
 import Schedules from "./components/Schedules";
 import Predictions from "./components/Predictions";
 import Alerts from "./components/Alerts";
+import ContactUs from "./components/ContactUs";
+import Faq from "./components/Faq";
+import Services from './components/Services';
 
 const App = () => {
   const [currentLocation, setCurrentLocation] = useState(null);
@@ -109,10 +113,10 @@ const App = () => {
               <img src="/logo.png" alt="SmartTransport Logo" className="logo" width={50} />
               <h1> SmartTransport</h1>
               <nav className="header-nav">
-                <a href="#" className="active">Home</a>
-                <a href="#">Services/Routes</a>
-                <a href="#">Contact Us</a>
-                <a href="#">FAQ</a>
+                <Link to="/" className="active">Home</Link>
+                <Link to="/services">Services</Link>
+                <Link to="/contact">Contact Us</Link>
+                <Link to="/faq">FAQ</Link>
               </nav>
             </div>
             <div className="header-right">
@@ -235,4 +239,19 @@ const App = () => {
   );
 };
 
-export default App;
+// Wrap the App component with Router
+const AppWithRouter = () => {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<App />} />
+        <Route path="/contact" element={<ContactUs />} />
+        {/* Add other routes as needed */}
+        <Route path="/services" element={<Services />} />
+        <Route path="/faq" element={<Faq />} />
+      </Routes>
+    </Router>
+  );
+};
+
+export default AppWithRouter;
